@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { workspaceApi } from '$lib/api/workspaces';
-	import type { Invite, Workspace } from '$lib/types';
+	import { workspaceApi } from '$lib/api/resources/workspaces';
+	import type { Workspace } from '$lib/models';
+	import type { Invite } from '$lib/models/invite';
 	import { UserRoundPlus } from '@lucide/svelte';
 
 	type Props = {

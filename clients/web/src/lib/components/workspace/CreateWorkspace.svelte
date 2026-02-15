@@ -1,16 +1,22 @@
 <script lang="ts">
-	import { workspaceApi } from '$lib/api/workspaces';
+	import { workspaceApi } from '$lib/api/resources/workspaces';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { profileStore } from '$lib/stores/profile.svelte';
-	import type { CreateWorkspaceRequest } from '$lib/types';
+	import { workspaceStore } from '$lib/stores/workspace.svelte';
 	import { BadgePlus, ImageUp } from '@lucide/svelte';
+
+	// TODO: change this
+	type CreateWorkspaceRequest = {
+		name: string;
+	};
 
 	let createWorkspaceRequest: CreateWorkspaceRequest = $state({
 		name: `${profileStore.currentProfile?.username}'s workspace`
 	});
 
 	async function createWorkspace() {
-		await workspaceApi.createWorkspace(createWorkspaceRequest);
+		const workspace = await workspaceApi.createWorkspace(createWorkspaceRequest);
+		workspaceStore.addWorkspace(workspace);
 		modalStore.closeModal();
 	}
 </script>

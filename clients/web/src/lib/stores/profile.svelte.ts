@@ -1,5 +1,5 @@
-import { profileApi } from '$lib/api/profiles';
-import type { Profile } from '$lib/types';
+import { profileApi } from '$lib/api/resources/profiles';
+import type { Profile } from '$lib/models';
 
 class ProfileStore {
 	currentProfile: Profile | undefined;

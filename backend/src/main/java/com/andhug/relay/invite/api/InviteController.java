@@ -1,7 +1,6 @@
 package com.andhug.relay.invite.api;
 
-import com.andhug.relay.invite.api.dto.response.AcceptInviteResponse;
-import com.andhug.relay.invite.api.dto.response.GetInviteDetailsResponse;
+import com.andhug.relay.invite.api.dto.InviteDto;
 import com.andhug.relay.profile.Profile;
 import com.andhug.relay.profile.ProfileService;
 import com.andhug.relay.profile.internal.ProfileMapper;
@@ -10,6 +9,8 @@ import com.andhug.relay.workspace.api.WorkspaceService;
 import com.andhug.relay.workspace.internal.WorkspaceMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,23 +38,23 @@ public class InviteController {
 
     private final ProfileMapper profileMapper;
 
-    @GetMapping("/{inviteId}")
+    @GetMapping("/{invite-code}")
     @Operation(summary = "Get information about invite", description = "Returns information about invite from invite ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invite found"),
             @ApiResponse(responseCode = "404", description = "Invite not found")
     })
-    public ResponseEntity<GetInviteDetailsResponse> getInvite(
-            @Parameter(required = true)
-            @PathVariable String inviteId) {
+    public ResponseEntity<InviteDto> getInvite(
+            @Parameter(in = ParameterIn.PATH, required = true, name = "invite-code", schema = @Schema(type = "string"))
+            @PathVariable("invite-code") String inviteCode) {
 
-        Invite invite = inviteService.getInvite(inviteId);
+        Invite invite = inviteService.getInvite(inviteCode);
 
         Profile sender = profileService.getProfile(invite.getSenderId());
 
         Workspace workspace = workspaceService.findById(invite.getWorkspaceId());
 
-        return ResponseEntity.ok(GetInviteDetailsResponse.builder()
+        return ResponseEntity.ok(InviteDto.builder()
                 .workspace(workspaceMapper.toDto(workspace))
                 .sender(profileMapper.toDto(sender))
                 .expiresAt(invite.getExpiresAt())
@@ -61,20 +62,19 @@ public class InviteController {
                 .build());
     }
 
-    @PostMapping("/{inviteId}")
+    @PostMapping("/{invite-code}")
     @Operation(summary = "Accept invite", description = "Accept invite from unique invite identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Accepted invite successfully")
     })
-    public ResponseEntity<AcceptInviteResponse> acceptInvite(
-            @Parameter(required = true)
-            @PathVariable String inviteId) {
+    public ResponseEntity<InviteDto> acceptInvite(
+            @Parameter(in = ParameterIn.PATH, required = true, name = "invite-code", schema = @Schema(type = "string"))
+            @PathVariable("invite-code") String inviteCode) {
 
-        log.info("Accepting invite {}", inviteId);
+        log.info("Accepting invite {}", inviteCode);
 
-        inviteService.acceptInvite(inviteId);
+        inviteService.acceptInvite(inviteCode);
 
-        return ResponseEntity.ok(AcceptInviteResponse.builder()
-                .build());
+        return ResponseEntity.ok(InviteDto.builder().build());
     }
 }

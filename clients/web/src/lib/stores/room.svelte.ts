@@ -1,5 +1,5 @@
-import { workspaceApi } from '$lib/api/workspaces';
-import type { Room } from '$lib/types';
+import { workspaceApi } from '$lib/api/resources/workspaces';
+import type { Room } from '$lib/models';
 import type { UUID } from 'crypto';
 import { SvelteMap } from 'svelte/reactivity';
 

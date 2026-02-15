@@ -1,6 +1,6 @@
 import { page } from '$app/state';
-import { roomApi } from '$lib/api/rooms';
-import type { Message } from '$lib/types';
+import { roomApi } from '$lib/api/resources/rooms';
+import type { Message } from '$lib/models';
 import type { UUID } from 'crypto';
 import { SvelteMap } from 'svelte/reactivity';
 

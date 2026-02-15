@@ -2,7 +2,7 @@ package com.andhug.relay.workspace.api;
 
 import com.andhug.relay.invite.api.Invite;
 import com.andhug.relay.invite.api.InviteService;
-import com.andhug.relay.invite.api.dto.response.GetInviteResponse;
+import com.andhug.relay.invite.api.dto.InviteDto;
 import com.andhug.relay.profile.ProfileDto;
 import com.andhug.relay.room.Room;
 import com.andhug.relay.room.RoomDto;
@@ -12,6 +12,8 @@ import com.andhug.relay.workspace.api.dto.request.CreateWorkspaceRequest;
 import com.andhug.relay.workspace.internal.WorkspaceMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,15 +44,15 @@ public class WorkspaceController {
 
     private final InviteService inviteService;
 
-    @GetMapping(value = "/{workspaceId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{workspace-id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get workspace by ID", description = "Retrieves a specific workspace by its unique identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Workspace found"),
             @ApiResponse(responseCode = "404", description = "Workspace not found")
     })
     public ResponseEntity<WorkspaceDto> getWorkspace(
-            @Parameter(description = "Workspace ID", required = true)
-            @PathVariable UUID workspaceId) {
+            @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
+            @PathVariable("workspace-id") UUID workspaceId) {
 
         Workspace workspace = workspaceService.findById(workspaceId);
 
@@ -76,15 +78,15 @@ public class WorkspaceController {
                 .body(workspaceMapper.toDto(workspace));
     }
 
-    @GetMapping(value = "/{workspaceId}/rooms", produces =  MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{workspace-id}/rooms", produces =  MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get workspace rooms", description = "Returns list of room objects associated with provided workspace")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of room objects"),
             @ApiResponse(responseCode = "404", description = "Workspace not found")
     })
     public ResponseEntity<List<RoomDto>> getRooms(
-            @Parameter(description = "Workspace ID", required = true)
-            @PathVariable("workspaceId") UUID workspaceId) {
+            @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
+            @PathVariable("workspace-id") UUID workspaceId) {
 
         List<Room> rooms = roomService.getRoomsByWorkspaceId(workspaceId);
 
@@ -97,52 +99,52 @@ public class WorkspaceController {
         }).toList());
     }
 
-    @PostMapping(value = "/{workspaceId}/rooms", produces =  MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{workspace-id}/rooms", produces =  MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create workspace room", description = "Creates a room object to be associated with provided workspace")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Room created successfully"),
             @ApiResponse(responseCode = "404", description = "Workspace not found")
     })
     public ResponseEntity<RoomDto> createRoom(
-        @Parameter(description = "Workspace ID", required = true)
-        @PathVariable("workspaceId") UUID workspaceId) {
+        @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
+        @PathVariable("workspace-id") UUID workspaceId) {
 
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @GetMapping(value = "/{workspaceId}/members", produces =   MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{workspace-id}/members", produces =   MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get members", description = "Returns a list of profiles that are members of provided workspace")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "List of Profile objects"),
             @ApiResponse(responseCode = "404", description = "Workspace not found")
     })
     public ResponseEntity<List<ProfileDto>> getMembers(
-            @Parameter(description = "Workspace ID", required = true)
-            @PathVariable("workspaceId") UUID workspaceId,
+            @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
+            @PathVariable("workspace-id") UUID workspaceId,
 
-            @Parameter(description = "Maximum number of messages to return")
+            @Parameter(in = ParameterIn.QUERY, required = false, name = "limit", schema = @Schema(type = "string"), description = "Maximum number of messages to return")
             @RequestParam(required = false, defaultValue = "50") int limit,
 
-            @Parameter(description = "Only returns messages after the message with this ID")
+            @Parameter(in = ParameterIn.QUERY, required = false, name = "limit", schema = @Schema(type = "string"), description = "Only returns messages after the message with this ID")
             @RequestParam(required = false) Long after) {
 
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @GetMapping(value = "/{workspaceId}/invite", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{workspace-id}/invite", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get workspace invite", description = "Returns an invite for the workspace to send to another user")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Workspace invite"),
             @ApiResponse(responseCode = "404", description = "Workspace not found")
     })
-    public ResponseEntity<GetInviteResponse> getInvite(
-            @Parameter(description = "Workspace ID", required = true)
-            @PathVariable("workspaceId") UUID workspaceId
+    public ResponseEntity<InviteDto> getInvite(
+            @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
+            @PathVariable("workspace-id") UUID workspaceId
     ) {
 
         Invite invite = inviteService.getInvite(workspaceId);
 
-        return ResponseEntity.ok(GetInviteResponse.builder()
+        return ResponseEntity.ok(InviteDto.builder()
                 .code(invite.getCode())
                 .expiresAt(invite.getExpiresAt())
                 .createdAt(invite.getCreatedAt())

@@ -1,5 +1,5 @@
-import { profileApi } from '$lib/api/profiles';
-import type { Workspace } from '$lib/types';
+import { profileApi } from '$lib/api/resources/profiles';
+import type { Workspace } from '$lib/models';
 import { SvelteMap } from 'svelte/reactivity';
 
 class WorkspaceStore {

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { InviteDetails } from '$lib/types';
-	import { inviteApi } from '$lib/api/invites';
+	import type { Invite } from '$lib/models';
+	import { inviteApi } from '$lib/api/resources/invites';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
 
 	const inviteCode: string | undefined = $derived(page.params.inviteCode);
 
-	let invite: InviteDetails | undefined = $state();
+	let invite: Invite | undefined = $state();
 
 	$effect(() => {
 		if (!inviteCode || !authStore.isAuthenticated) {
@@ -15,7 +15,7 @@
 		}
 
 		async function setup() {
-			const res: InviteDetails = await inviteApi.getInviteDetails(inviteCode!);
+			const res: Invite = await inviteApi.getInvite(inviteCode!);
 
 			invite = res;
 		}

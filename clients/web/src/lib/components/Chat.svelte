@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { messageStore } from '$lib/stores/message.svelte';
 	import { profileStore } from '$lib/stores/profile.svelte';
-	import type { Message } from '$lib/types';
+	import type { Message } from '$lib/models';
 	import type { UUID } from 'crypto';
 
 	const currentRoomId: UUID | undefined = $derived(page.params.roomId as UUID);

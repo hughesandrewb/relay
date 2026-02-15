@@ -6,7 +6,7 @@
 	import { ChevronDown, Settings, UserRoundPlus, BadgePlus } from '@lucide/svelte';
 	import { clickOutside } from '$lib/utils';
 	import type { UUID } from 'crypto';
-	import type { Room, Workspace } from '$lib/types';
+	import type { Room, Workspace } from '$lib/models';
 	import WorkspaceInvite from '$lib/components/workspace/WorkspaceInvite.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
 
@@ -32,7 +32,7 @@
 				return;
 			}
 			await roomStore.getRooms(currentWorkspaceId);
-			goto(`/rooms/${currentWorkspaceId}/${rooms![0].id}`);
+			goto(`/rooms/${currentWorkspaceId}/${rooms![0]!.id}`);
 		}
 
 		setup();
@@ -53,7 +53,6 @@
 	}
 
 	function stopResize() {
-		console.log(roomListWidth);
 		isResizing = false;
 	}
 

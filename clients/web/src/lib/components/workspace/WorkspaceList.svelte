@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { workspaceStore } from '$lib/stores/workspace.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
-	import CreateWorkspace from './CreateWorkspace.svelte';
+	import CreateWorkspace from '$lib/components/workspace/CreateWorkspace.svelte';
 
 	const currentWorkspaceId: string | undefined = $derived(page.params.workspaceId);
 
