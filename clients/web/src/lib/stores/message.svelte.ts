@@ -1,0 +1,30 @@
+import { page } from '$app/state';
+import { roomApi } from '$lib/api/rooms';
+import type { Message } from '$lib/types';
+import type { UUID } from 'crypto';
+import { SvelteMap } from 'svelte/reactivity';
+
+class MessageStore {
+	messagesByRoomId = new SvelteMap<UUID, Message[]>();
+
+	async getMessages(roomId: UUID) {
+		this.messagesByRoomId.set(roomId, []);
+		(await roomApi.getMessages(roomId)).map((message) => this.addMessage(message));
+	}
+
+	async sendMessage(content: string) {
+		const currentRoomId: UUID | undefined = page.params.roomId as UUID;
+
+		const message: Message = await roomApi.sendMessage(currentRoomId, { content });
+
+		this.addMessage(message);
+	}
+
+	private addMessage(message: Message) {
+		const currentMessages: Message[] = this.messagesByRoomId.get(message.roomId) ?? [];
+
+		this.messagesByRoomId.set(message.roomId, [...currentMessages, message]);
+	}
+}
+
+export const messageStore = new MessageStore();

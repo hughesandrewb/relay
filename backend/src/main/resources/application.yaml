@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: relay
+  datasource:
+    url: jdbc:postgresql://localhost:5432/relay
+    username: relay
+    password: relay
+  jpa:
+    hibernate:
+      ddl-auto: update
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/relay
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
