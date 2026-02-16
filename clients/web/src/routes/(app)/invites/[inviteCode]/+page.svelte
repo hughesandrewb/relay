@@ -28,7 +28,7 @@
 			return;
 		}
 
-		await inviteApi.acceptInvite(inviteCode);
+		await inviteApi.acceptInvite(invite.code);
 		goto(`/rooms/${invite.workspace.id}`);
 	}
 </script>
@@ -37,7 +37,7 @@
 	{#if invite}
 		<div class="flex flex-col items-center gap-4 rounded-xl bg-white p-4 shadow-2xl">
 			<div class="text-3xl">
-				{invite.sender.username} has invited to {invite.workspace.name}!
+				{invite.sender.displayName} has invited to {invite.workspace.name}!
 			</div>
 			<div class="flex flex-col items-center">
 				<div class="flex size-32 items-center justify-center rounded-full bg-red-300 text-7xl">

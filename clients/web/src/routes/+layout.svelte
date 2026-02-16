@@ -1,11 +1,13 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { profileStore } from '$lib/stores/profile.svelte';
+	import { page } from '$app/state';
 
 	let { children } = $props();
+
+	const redirect = $derived(page.url.href);
 
 	$effect(() => {
 		async function setup() {
@@ -13,7 +15,7 @@
 			profileStore.getCurrentProfile();
 
 			if (!authStore.isAuthenticated) {
-				goto('/login');
+				authStore.login(redirect);
 			}
 		}
 		setup();

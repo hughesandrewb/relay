@@ -20,9 +20,9 @@ class AuthStore {
 		this.isLoading = false;
 	}
 
-	async login() {
+	async login(redirectUri?: string) {
 		try {
-			this.authProvider.login();
+			this.authProvider.login(redirectUri);
 
 			this.isAuthenticated = this.authProvider.isAuthenticated();
 		} catch (error) {
