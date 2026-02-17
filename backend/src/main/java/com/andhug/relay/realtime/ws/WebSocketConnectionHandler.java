@@ -46,11 +46,9 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
         String m = (String) message.getPayload();
 
-        MessagePayload message1 = new ObjectMapper().readValue(m, MessagePayload.class);
+        MessagePayload messagePayload = new ObjectMapper().readValue(m, MessagePayload.class);
 
         UUID profileId = getProfileId(session);
-
-        this.connectionRegistry.getConnection(profileId).sendMessage(message1.getOp());
     }
 
     @Override

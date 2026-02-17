@@ -11,12 +11,12 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     WebSocketConnectionHandler webSocketConnectionHandler;
 
-    UserHandshakeInterceptor userHandshakeInterceptor;
+    AuthHandshakeInterceptor authHandshakeInterceptor;
 
-    public WebSocketConfiguration(WebSocketConnectionHandler webSocketConnectionHandler, UserHandshakeInterceptor userHandshakeInterceptor) {
+    public WebSocketConfiguration(WebSocketConnectionHandler webSocketConnectionHandler, AuthHandshakeInterceptor authHandshakeInterceptor) {
 
         this.webSocketConnectionHandler = webSocketConnectionHandler;
-        this.userHandshakeInterceptor = userHandshakeInterceptor;
+        this.authHandshakeInterceptor = authHandshakeInterceptor;
     }
 
     @Override
@@ -24,6 +24,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
         registry
                 .addHandler(this.webSocketConnectionHandler, "/ws")
-                .addInterceptors(this.userHandshakeInterceptor);
+                .addInterceptors(this.authHandshakeInterceptor)
+                .setAllowedOrigins("http://localhost:5173");
     }
 }

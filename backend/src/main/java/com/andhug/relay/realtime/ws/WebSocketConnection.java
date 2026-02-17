@@ -1,9 +1,14 @@
 package com.andhug.relay.realtime.ws;
 
 import com.andhug.relay.realtime.registry.Connection;
+import com.andhug.relay.utils.Json;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nimbusds.jose.shaded.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+@Slf4j
 public class WebSocketConnection extends Connection {
 
     private WebSocketSession session;
@@ -17,9 +22,10 @@ public class WebSocketConnection extends Connection {
     public void sendMessage(Object payload) {
 
         try {
-            this.session.sendMessage(new TextMessage(payload.toString()));
+            this.session.sendMessage(new TextMessage(toJson(payload)));
         } catch (Exception e) {
             // do something
+            log.info("Error sending message to {}, {}", payload, e.getMessage());
         }
     }
 
@@ -37,5 +43,9 @@ public class WebSocketConnection extends Connection {
         } catch (Exception e) {
             // do something
         }
+    }
+
+    private String toJson(Object object) throws JsonProcessingException {
+        return Json.toJson(object);
     }
 }

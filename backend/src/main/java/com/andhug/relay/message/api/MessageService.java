@@ -42,9 +42,19 @@ public class MessageService {
 
         MessageEntity saved = messageRepository.save(toSave);
 
-        eventPublisher.publishEvent(new MessageCreated(saved.getId(), saved.getAuthorId(), saved.getRoomId(), saved.getContent()));
+        var messageDto = MessageDto.builder()
+                .id(saved.getId())
+                .authorId(saved.getAuthorId())
+                .roomId(saved.getRoomId())
+                .content(saved.getContent())
+                .build();
 
-        return new MessageDto(saved.getId(), saved.getAuthorId(), saved.getRoomId(), saved.getContent());
+        eventPublisher.publishEvent(MessageCreated.builder()
+                .message(messageDto)
+                .roomId(saved.getRoomId())
+                .build());
+
+        return messageDto;
     }
 
     public List<MessageDto> getMessages(UUID roomId) {

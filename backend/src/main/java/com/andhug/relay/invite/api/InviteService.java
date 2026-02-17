@@ -7,6 +7,7 @@ import com.andhug.relay.profile.Profile;
 import com.andhug.relay.profile.ProfileContext;
 import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
+import com.andhug.relay.utils.Random;
 import com.andhug.relay.workspace.api.WorkspaceService;
 import com.andhug.relay.workspace.internal.WorkspaceEntity;
 import com.andhug.relay.workspace.internal.WorkspaceRepository;
@@ -112,25 +113,13 @@ public class InviteService {
     }
 
     private String generateCode() {
+
         String code;
 
         do {
-            code = this.generateRandomCode();
+            code = Random.generateRandomCode(8);
         } while (inviteRepository.existsByCode(code));
 
         return code;
-    }
-
-    private String generateRandomCode() {
-
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new SecureRandom();
-        var result = new StringBuilder(8);
-
-        for (int i = 0; i < 8; i++) {
-            result.append(characters.charAt(random.nextInt(characters.length())));
-        }
-
-        return result.toString();
     }
 }

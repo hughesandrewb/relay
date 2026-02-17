@@ -27,8 +27,9 @@ public class SecurityConfig {
                                 "/v3/api-docs.yaml",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
-                        ).permitAll()
-                        .requestMatchers("/public/**").permitAll()
+                        ).permitAll()  // swagger api endpoints
+                        .requestMatchers("/public/**").permitAll()  // public api endpoints
+                        .requestMatchers("/ws").permitAll()  // WebSocket api endpoint
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

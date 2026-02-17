@@ -1,5 +1,6 @@
 package com.andhug.relay.realtime;
 
+import com.andhug.relay.message.api.dto.MessageDto;
 import com.andhug.relay.message.api.events.MessageCreated;
 import com.andhug.relay.realtime.registry.Connection;
 import com.andhug.relay.realtime.registry.ConnectionRegistry;
@@ -33,6 +34,11 @@ public class NotificationDirector {
 
         Set<UUID> toNotify = roomToProfiles.get(event.roomId());
 
+        var message = MessagePayload.builder()
+                .op(GatewayOpcode.DISPATCH)
+                .data(event.message())
+                .build();
+
         for (UUID profileId : toNotify) {
             Connection connection = connectionRegistry.getConnection(profileId);
 
@@ -41,7 +47,7 @@ public class NotificationDirector {
                 continue;
             }
 
-            connection.sendMessage(event.content());  // TODO: send actual message op
+            connection.sendMessage(message);
         }
     }
 
