@@ -4,6 +4,7 @@ import com.andhug.relay.profile.exception.ProfileNotFoundException;
 import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileMapper;
 import com.andhug.relay.profile.internal.ProfileRepository;
+import com.andhug.relay.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -53,11 +54,14 @@ public class ProfileService {
     @Transactional
     private Profile createProfile(Jwt jwt) {
 
-        var profileEntity = new ProfileEntity();
+        var profile = Profile.builder()
+                .id(UUID.fromString(jwt.getSubject()))
+                .username(jwt.getClaimAsString("preferred_username"))
+                .displayName(jwt.getClaimAsString("name"))
+                .accentColor(RandomUtils.generateRandomColor())
+                .build();
 
-        profileEntity.setId(UUID.fromString(jwt.getSubject()));
-        profileEntity.setUsername(jwt.getClaimAsString("preferred_username"));
-        profileEntity.setDisplayName(jwt.getClaimAsString("name"));
+        ProfileEntity profileEntity = profileMapper.toEntity(profile);
 
         return profileMapper.toDomain(profileRepository.save(profileEntity));
     }

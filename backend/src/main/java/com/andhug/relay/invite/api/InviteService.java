@@ -7,7 +7,7 @@ import com.andhug.relay.profile.Profile;
 import com.andhug.relay.profile.ProfileContext;
 import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
-import com.andhug.relay.utils.Random;
+import com.andhug.relay.utils.RandomUtils;
 import com.andhug.relay.workspace.api.WorkspaceService;
 import com.andhug.relay.workspace.internal.WorkspaceEntity;
 import com.andhug.relay.workspace.internal.WorkspaceRepository;
@@ -18,7 +18,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,7 +42,8 @@ public class InviteService {
 
         Profile currentProfile = ProfileContext.getCurrentProfile();
 
-        Optional<InviteEntity> inviteEntity = inviteRepository.findByWorkspaceIdAndSenderId(workspaceId, currentProfile.getId());
+        Optional<InviteEntity> inviteEntity = inviteRepository.findByWorkspaceIdAndSenderId(workspaceId,
+                currentProfile.getId());
 
         if (inviteEntity.isPresent()) {
             Invite invite = inviteMapper.toDomain(inviteEntity.get());
@@ -117,7 +117,7 @@ public class InviteService {
         String code;
 
         do {
-            code = Random.generateRandomCode(8);
+            code = RandomUtils.generateRandomCode(8);
         } while (inviteRepository.existsByCode(code));
 
         return code;

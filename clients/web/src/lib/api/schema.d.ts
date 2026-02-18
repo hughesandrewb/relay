@@ -287,6 +287,7 @@ export interface components {
             id?: string;
             username?: string;
             displayName?: string;
+            accentColor?: string;
         };
         RealtimeTicketDto: {
             code?: string;

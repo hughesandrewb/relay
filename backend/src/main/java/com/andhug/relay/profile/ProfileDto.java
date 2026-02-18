@@ -5,5 +5,6 @@ import java.util.UUID;
 public record ProfileDto(
         UUID id,
         String username,
-        String displayName
+        String displayName,
+        String accentColor
 ) {}

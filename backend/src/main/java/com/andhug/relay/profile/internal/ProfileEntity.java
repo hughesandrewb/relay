@@ -31,4 +31,7 @@ public class ProfileEntity {
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<WorkspaceProfileEntity> workspaces = new HashSet<>();
+
+    @Column(nullable = false)
+    private Integer accentColor;
 }

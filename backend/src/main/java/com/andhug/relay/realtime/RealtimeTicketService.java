@@ -2,7 +2,7 @@ package com.andhug.relay.realtime;
 
 import com.andhug.relay.profile.Profile;
 import com.andhug.relay.utils.Constants;
-import com.andhug.relay.utils.Random;
+import com.andhug.relay.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -51,6 +51,6 @@ public class RealtimeTicketService {
     }
 
     private String generateRealtimeTicketCode() {
-        return Random.generateRandomCode(Constants.REALTIME_TICKET_CODE_LENGTH);
+        return RandomUtils.generateRandomCode(Constants.REALTIME_TICKET_CODE_LENGTH);
     }
 }
