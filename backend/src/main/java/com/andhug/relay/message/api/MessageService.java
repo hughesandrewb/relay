@@ -2,13 +2,15 @@ package com.andhug.relay.message.api;
 
 import com.andhug.relay.id.SnowflakeGenerator;
 import com.andhug.relay.message.api.events.MessageCreated;
-import com.andhug.relay.message.api.model.Message;
 import com.andhug.relay.message.api.dto.CreateMessageRequest;
 import com.andhug.relay.message.api.dto.MessageDto;
 import com.andhug.relay.message.internal.MessageEntity;
 import com.andhug.relay.message.internal.MessageRepository;
 import com.andhug.relay.profile.Profile;
 import com.andhug.relay.profile.ProfileContext;
+import com.andhug.relay.profile.ProfileDto;
+import com.andhug.relay.profile.ProfileService;
+import com.andhug.relay.profile.internal.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +30,10 @@ public class MessageService {
 
     private final SnowflakeGenerator snowflakeGenerator;
 
+    private final ProfileMapper profileMapper;
+
+    private final ProfileService profileService;
+
     @Transactional
     public MessageDto createMessage(CreateMessageRequest request) {
 
@@ -42,9 +48,11 @@ public class MessageService {
 
         MessageEntity saved = messageRepository.save(toSave);
 
+        ProfileDto authorDto = profileMapper.toDto(author);
+
         var messageDto = MessageDto.builder()
                 .id(saved.getId())
-                .authorId(saved.getAuthorId())
+                .author(authorDto)
                 .roomId(saved.getRoomId())
                 .content(saved.getContent())
                 .build();
@@ -77,7 +85,10 @@ public class MessageService {
                 .findByRoomId(roomId, PageRequest.of(pageNumber, pageSize))
                 .stream()
                 .map(messageEntity -> {
-                    return new MessageDto(messageEntity.getId(), messageEntity.getAuthorId(), messageEntity.getRoomId(), messageEntity.getContent());
+                    Profile author = profileService.getProfile(messageEntity.getAuthorId());
+                    ProfileDto authorDto = profileMapper.toDto(author);
+                    return new MessageDto(messageEntity.getId(), authorDto, messageEntity.getRoomId(),
+                            messageEntity.getContent());
                 })
                 .toList();
     }

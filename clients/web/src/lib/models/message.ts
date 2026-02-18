@@ -1,9 +1,10 @@
 import type { MessageDto } from '$lib/api/resources/messages';
 import type { UUID } from 'crypto';
+import { createProfile, type Profile } from '$lib/models';
 
 export interface Message {
 	id: number;
-	authorId: UUID;
+	author: Profile;
 	roomId: UUID;
 	content: string;
 }
@@ -11,7 +12,7 @@ export interface Message {
 export function createMessage(dto: MessageDto): Message {
 	return {
 		id: dto.id!,
-		authorId: dto.authorId! as UUID,
+		author: createProfile(dto.author!),
 		roomId: dto.roomId! as UUID,
 		content: dto.content!
 	};

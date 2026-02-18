@@ -267,11 +267,17 @@ export interface components {
         MessageDto: {
             /** Format: int64 */
             id?: number;
-            /** Format: uuid */
-            authorId?: string;
+            author?: components["schemas"]["ProfileDto"];
             /** Format: uuid */
             roomId?: string;
             content?: string;
+        };
+        ProfileDto: {
+            /** Format: uuid */
+            id?: string;
+            username?: string;
+            displayName?: string;
+            accentColor?: string;
         };
         InviteDto: {
             code?: string;
@@ -281,13 +287,6 @@ export interface components {
             expiresAt?: string;
             /** Format: date-time */
             createdAt?: string;
-        };
-        ProfileDto: {
-            /** Format: uuid */
-            id?: string;
-            username?: string;
-            displayName?: string;
-            accentColor?: string;
         };
         RealtimeTicketDto: {
             code?: string;

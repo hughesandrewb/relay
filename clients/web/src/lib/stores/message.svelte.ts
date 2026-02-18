@@ -13,7 +13,7 @@ class MessageStore {
 	constructor() {
 		wsStore.on('DISPATCH', (data: MessageDto) => {
 			const message: Message = createMessage(data);
-			if (message.authorId === profileStore.currentProfile?.id) {
+			if (message.author.id === profileStore.currentProfile?.id) {
 				return;
 			}
 			this.addMessage(message);

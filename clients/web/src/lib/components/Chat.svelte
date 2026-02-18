@@ -29,17 +29,30 @@
 	{#if currentRoomId}
 		<div class="grid grow content-end gap-1 px-4">
 			<span class="justify-self-center text-gray-400">Beginning of chat</span>
-			{#each messages as message (message.id)}
+			{#each messages as message, i (message.id)}
 				<div
-					class="flex {message.authorId === profileStore.currentProfile?.id
+					class="flex {message.author.id === profileStore.currentProfile?.id
 						? 'justify-self-end'
 						: 'justify-self-start'} gap-2"
 				>
-					{#if message.authorId !== profileStore.currentProfile?.id}
-						<div class="h-8 w-8 rounded-xl bg-black"></div>
+					{#if message.author.id !== profileStore.currentProfile?.id}
+						{#if messages?.at(i + 1)?.author.id !== message.author.id}
+							<div
+								class="group relative h-8 w-8 rounded-xl"
+								style="background-color: #{message.author.accentColor};"
+							>
+								<div
+									class="absolute right-full mx-2 hidden rounded-xl border bg-white p-2 whitespace-nowrap shadow-lg group-hover:block"
+								>
+									{message.author.displayName}
+								</div>
+							</div>
+						{:else}
+							<div class="h-8 w-8"></div>
+						{/if}
 					{/if}
 					<span
-						class="{message.authorId === profileStore.currentProfile?.id
+						class="{message.author.id === profileStore.currentProfile?.id
 							? 'bg-gray-200'
 							: 'bg-gray-300'} rounded-xl px-2 py-1">{message.content}</span
 					>
