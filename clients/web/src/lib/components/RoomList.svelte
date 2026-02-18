@@ -83,7 +83,7 @@
 				</button>
 				{#if showWorkspaceOptions}
 					<div
-						class="absolute flex w-64 flex-col rounded-xl border bg-white text-lg shadow-2xl"
+						class="absolute z-10 flex w-64 flex-col rounded-xl border bg-white text-lg shadow-2xl"
 						use:clickOutside={hideShowWorkspaceOptions}
 					>
 						<button
