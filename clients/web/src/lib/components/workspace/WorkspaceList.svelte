@@ -4,6 +4,7 @@
 	import { workspaceStore } from '$lib/stores/workspace.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import CreateWorkspace from '$lib/components/workspace/CreateWorkspace.svelte';
+	import Logo from '$lib/components/Logo.svelte';
 
 	const currentWorkspaceId: string | undefined = $derived(page.params.workspaceId);
 
@@ -19,9 +20,7 @@
 {#if !workspaceStore.isLoading}
 	<div class="flex h-full w-24 flex-col items-center gap-2 border-r p-2">
 		<button class="flex cursor-pointer" title="Create server">
-			<div class="size-16 bg-red-500 px-2 py-7 text-white">
-				<div class="flex text-8xl/0 font-bold">r</div>
-			</div>
+			<Logo size={72} />
 		</button>
 		<div class="my-2 flex flex-col">
 			{#each Array.from(workspaceStore.workspaces) as workspace (workspace.id)}
