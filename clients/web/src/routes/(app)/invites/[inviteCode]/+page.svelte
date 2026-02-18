@@ -24,12 +24,12 @@
 	});
 
 	async function acceptInvite() {
-		if (!invite) {
+		if (!inviteCode) {
 			return;
 		}
 
-		await inviteApi.acceptInvite(invite.code);
-		goto(`/rooms/${invite.workspace.id}`);
+		await inviteApi.acceptInvite(inviteCode);
+		goto(`/rooms/${inviteCode}`);
 	}
 </script>
 
@@ -37,13 +37,14 @@
 	{#if invite}
 		<div class="flex flex-col items-center gap-4 rounded-xl bg-white p-4 shadow-2xl">
 			<div class="text-3xl">
-				{invite.sender.displayName} has invited to {invite.workspace.name}!
+				{invite.sender?.displayName} has invited to {invite.workspace?.name}!
 			</div>
 			<div class="flex flex-col items-center">
-				<div class="flex size-32 items-center justify-center rounded-full bg-red-300 text-7xl">
-					AW
-				</div>
-				<div class="text-4xl">{invite.workspace.name}</div>
+				<div
+					class="flex size-32 items-center justify-center rounded-full text-7xl"
+					style="background-color: #{invite.sender?.accentColor};"
+				></div>
+				<div class="text-4xl">{invite.workspace?.name}</div>
 			</div>
 			<button class="w-3/4 cursor-pointer rounded-xl bg-blue-300 p-2 text-xl" onclick={acceptInvite}
 				>Accept Invite</button

@@ -1,16 +1,10 @@
 import type { InviteDto } from '$lib/api/resources/invites';
-import type { UUID } from 'crypto';
+import { createProfile, createWorkspace, type Profile, type Workspace } from '$lib/models';
 
 export interface Invite {
 	code: string;
-	sender?: {
-		id: UUID;
-		displayName: string;
-	};
-	workspace?: {
-		id: UUID;
-		name: string;
-	};
+	sender?: Profile;
+	workspace?: Workspace;
 	expiresAt: Date;
 	createdAt: Date;
 }
@@ -18,18 +12,8 @@ export interface Invite {
 export function createInvite(dto: InviteDto): Invite {
 	return {
 		code: dto.code!,
-		sender: dto.sender
-			? {
-					id: dto.sender.id! as UUID,
-					displayName: dto.sender.displayName!
-				}
-			: undefined,
-		workspace: dto.workspace
-			? {
-					id: dto.workspace.id! as UUID,
-					name: dto.workspace.name!
-				}
-			: undefined,
+		sender: dto.sender ? createProfile(dto.sender) : undefined,
+		workspace: dto.workspace ? createWorkspace(dto.workspace) : undefined,
 		expiresAt: new Date(dto.expiresAt!),
 		createdAt: new Date(dto.createdAt!)
 	};
