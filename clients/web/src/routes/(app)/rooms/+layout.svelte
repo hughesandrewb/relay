@@ -4,6 +4,7 @@
 	import WorkspaceList from '$lib/components/workspace/WorkspaceList.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import Modal from '$lib/components/common/Modal.svelte';
+	import ProfilePopover from '$lib/components/profile/ProfilePopover.svelte';
 
 	let { children } = $props();
 </script>
@@ -16,6 +17,7 @@
 		<aside>
 			<RoomList />
 		</aside>
+		<ProfilePopover />
 		<main class="main-content h-full w-full">
 			{@render children()}
 		</main>
