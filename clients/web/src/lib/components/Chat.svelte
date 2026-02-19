@@ -27,7 +27,7 @@
 
 <div class="flex h-full w-full flex-col bg-white">
 	{#if currentRoomId}
-		<div class="grid grow content-end gap-1 overflow-scroll px-4">
+		<div class="grid grow content-end gap-1 overflow-y-scroll px-4">
 			<span class="justify-self-center text-gray-400">Beginning of chat</span>
 			{#each messages as message, i (message.id)}
 				<div
