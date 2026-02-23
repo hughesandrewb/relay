@@ -3,6 +3,7 @@ package com.andhug.relay.workspace.api;
 import com.andhug.relay.profile.ProfileContext;
 import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
+import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
 import com.andhug.relay.workspace.api.events.WorkspaceCreatedEvent;
 import com.andhug.relay.workspace.internal.*;
 import lombok.RequiredArgsConstructor;
@@ -93,6 +94,11 @@ public class WorkspaceService {
                 .profile(profileEntity)
                 .workspace(workspaceEntity)
                 .build();
+
+        applicationEventPublisher.publishEvent(JoinedWorkspaceEvent.builder()
+                .profileId(profileId)
+                .workspaceId(workspaceId)
+                .build());
 
         workspaceProfileRepository.save(workspaceProfileEntity);
     }

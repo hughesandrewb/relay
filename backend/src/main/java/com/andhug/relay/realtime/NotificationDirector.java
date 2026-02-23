@@ -1,6 +1,5 @@
 package com.andhug.relay.realtime;
 
-import com.andhug.relay.message.api.dto.MessageDto;
 import com.andhug.relay.message.api.events.MessageCreated;
 import com.andhug.relay.realtime.registry.Connection;
 import com.andhug.relay.realtime.registry.ConnectionRegistry;
@@ -8,6 +7,7 @@ import com.andhug.relay.room.Room;
 import com.andhug.relay.room.RoomService;
 import com.andhug.relay.workspace.api.Workspace;
 import com.andhug.relay.workspace.api.WorkspaceService;
+import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.modulith.events.ApplicationModuleListener;
@@ -27,10 +27,10 @@ public class NotificationDirector {
 
     private final ConnectionRegistry connectionRegistry;
 
-    private final Map<UUID, Set<UUID>> roomToProfiles = new ConcurrentHashMap<>();  // roomId -> profileId[]
+    private final Map<UUID, Set<UUID>> roomToProfiles = new ConcurrentHashMap<>(); // roomId -> profileId[]
 
     @ApplicationModuleListener
-    void on(MessageCreated event) {
+    void onMessageCreated(MessageCreated event) {
 
         Set<UUID> toNotify = roomToProfiles.get(event.roomId());
 
@@ -51,6 +51,11 @@ public class NotificationDirector {
         }
     }
 
+    @ApplicationModuleListener
+    void onJoinedWorkspace(JoinedWorkspaceEvent event) {
+        subscribeToRooms(event.profileId());
+    }
+
     public void subscribeToRooms(UUID profileId) {
 
         List<Workspace> workspaces = workspaceService.findAllByProfileId(profileId);
@@ -61,12 +66,9 @@ public class NotificationDirector {
             log.info("Subscribing to {} rooms for {}", rooms.size(), workspace.getId());
 
             for (Room room : rooms) {
-                Set<UUID> roomIds = roomToProfiles.get(room.getId());
-                if (roomIds == null) {
-                    roomIds = new HashSet<>();
-                }
-                roomIds.add(profileId);
-                roomToProfiles.put(room.getId(), roomIds);
+                roomToProfiles
+                        .computeIfAbsent(room.getId(), k -> new HashSet<>())
+                        .add(profileId);
             }
         }
     }
