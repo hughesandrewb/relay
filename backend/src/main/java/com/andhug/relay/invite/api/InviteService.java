@@ -3,8 +3,6 @@ package com.andhug.relay.invite.api;
 import com.andhug.relay.invite.internal.InviteEntity;
 import com.andhug.relay.invite.internal.InviteMapper;
 import com.andhug.relay.invite.internal.InviteRepository;
-import com.andhug.relay.profile.Profile;
-import com.andhug.relay.profile.ProfileContext;
 import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
 import com.andhug.relay.utils.RandomUtils;
@@ -38,12 +36,10 @@ public class InviteService {
     private final WorkspaceService workspaceService;
 
     @Transactional
-    public Invite getInvite(UUID workspaceId) {
-
-        Profile currentProfile = ProfileContext.getCurrentProfile();
+    public Invite getInvite(UUID workspaceId, UUID profileId) {
 
         Optional<InviteEntity> inviteEntity = inviteRepository.findByWorkspaceIdAndSenderId(workspaceId,
-                currentProfile.getId());
+                profileId);
 
         if (inviteEntity.isPresent()) {
             Invite invite = inviteMapper.toDomain(inviteEntity.get());
@@ -56,10 +52,10 @@ public class InviteService {
         }
 
         try {
-            return this.createInvite(workspaceId);
+            return this.createInvite(workspaceId, profileId);
         } catch (DataIntegrityViolationException e) {
             return inviteMapper.toDomain(
-                    inviteRepository.findByWorkspaceIdAndSenderId(workspaceId, currentProfile.getId())
+                    inviteRepository.findByWorkspaceIdAndSenderId(workspaceId, profileId)
                             .orElseThrow(() -> new IllegalStateException("Invite already exists")));
         }
     }
@@ -80,13 +76,11 @@ public class InviteService {
     }
 
     @Transactional
-    public Invite createInvite(UUID workspaceId) {
-
-        Profile currentProfile = ProfileContext.getCurrentProfile();
+    public Invite createInvite(UUID workspaceId, UUID senderId) {
 
         // TODO: check profile permissions
 
-        ProfileEntity senderEntity = profileRepository.getReferenceById(currentProfile.getId());
+        ProfileEntity senderEntity = profileRepository.getReferenceById(senderId);
         WorkspaceEntity workspaceEntity = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NoResultException("Workspace not found"));
 
@@ -103,13 +97,11 @@ public class InviteService {
     }
 
     @Transactional
-    public void acceptInvite(String code) {
+    public void acceptInvite(String code, UUID profileId) {
 
         Invite invite = this.getInvite(code);
 
-        Profile currentProfile = ProfileContext.getCurrentProfile();
-
-        workspaceService.joinWorkspace(currentProfile.getId(), invite.getWorkspaceId());
+        workspaceService.joinWorkspace(profileId, invite.getWorkspaceId());
     }
 
     private String generateCode() {

@@ -1,6 +1,5 @@
 package com.andhug.relay.workspace.api;
 
-import com.andhug.relay.profile.ProfileContext;
 import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
 import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
@@ -31,11 +30,11 @@ public class WorkspaceService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
-    public Workspace createWorkspace(Workspace workspace) {
+    public Workspace createWorkspace(Workspace workspace, UUID ownerId) {
 
         WorkspaceEntity workspaceEntity = workspaceMapper.toEntity(workspace);
 
-        ProfileEntity profileEntity = profileRepository.getReferenceById(ProfileContext.getCurrentProfile().getId());
+        ProfileEntity profileEntity = profileRepository.getReferenceById(ownerId);
 
         workspaceEntity.setOwnerId(profileEntity.getId());
 

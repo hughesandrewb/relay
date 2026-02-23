@@ -14,10 +14,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,9 +41,11 @@ public class ProfileController {
             @ApiResponse(responseCode = "200", description = "Profile information"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public ProfileDto getMe() {
+    public ProfileDto getMe(
+            @AuthenticationPrincipal Profile profile
+    ) {
 
-        return profileMapper.toDto(ProfileContext.getCurrentProfile());
+        return profileMapper.toDto(profile);
     }
 
     @GetMapping(value = "/me/workspaces",  produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,17 +54,17 @@ public class ProfileController {
             @ApiResponse(responseCode = "200", description = "List of current profile's workspaces"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public List<WorkspaceSummaryDto> getWorkspaces() {
+    public List<WorkspaceSummaryDto> getWorkspaces(
+            @AuthenticationPrincipal Profile profile
+    ) {
 
-        Profile currentProfile = ProfileContext.getCurrentProfile();
-
-        List<Workspace> workspaces = workspaceService.findAllByProfileId(currentProfile.getId());
+        List<Workspace> workspaces = workspaceService.findAllByProfileId(profile.getId());
 
         return workspaces.stream()
                 .map(workspace -> WorkspaceSummaryDto.builder()
                             .id(workspace.getId())
                             .name(workspace.getName())
-                            .owner(workspace.getOwnerId().equals(currentProfile.getId()))
+                        .owner(workspace.getOwnerId().equals(profile.getId()))
                             .build())
                 .toList();
     }
@@ -72,11 +74,11 @@ public class ProfileController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of current profile's direct messages")
     })
-    public List<RoomDto> getDirectMessages() {
+    public List<RoomDto> getDirectMessages(
+            @AuthenticationPrincipal Profile profile
+    ) {
 
-        Profile currentProfile = ProfileContext.getCurrentProfile();
-
-        List<Room> rooms = roomService.getRoomsByProfileId(currentProfile.getId());
+        List<Room> rooms = roomService.getRoomsByProfileId(profile.getId());
 
         throw new UnsupportedOperationException("Not supported yet.");
     }

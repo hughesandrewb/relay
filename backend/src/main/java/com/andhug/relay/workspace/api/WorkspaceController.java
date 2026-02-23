@@ -3,6 +3,7 @@ package com.andhug.relay.workspace.api;
 import com.andhug.relay.invite.api.Invite;
 import com.andhug.relay.invite.api.InviteService;
 import com.andhug.relay.invite.api.dto.InviteDto;
+import com.andhug.relay.profile.Profile;
 import com.andhug.relay.profile.ProfileDto;
 import com.andhug.relay.room.Room;
 import com.andhug.relay.room.RoomDto;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,13 +67,15 @@ public class WorkspaceController {
             @ApiResponse(responseCode = "200", description = "Workspace created successfully")
     })
     public ResponseEntity<WorkspaceDto> createWorkspace(
-            @RequestBody CreateWorkspaceRequest request) {
+            @AuthenticationPrincipal Profile profile,
+            @RequestBody CreateWorkspaceRequest request
+    ) {
 
         var partial = Workspace.builder()
                 .name(request.name())
                 .build();
 
-        Workspace workspace = workspaceService.createWorkspace(partial);
+        Workspace workspace = workspaceService.createWorkspace(partial, profile.getId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -138,11 +142,12 @@ public class WorkspaceController {
             @ApiResponse(responseCode = "404", description = "Workspace not found")
     })
     public ResponseEntity<InviteDto> getInvite(
+            @AuthenticationPrincipal Profile profile,
             @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
             @PathVariable("workspace-id") UUID workspaceId
     ) {
 
-        Invite invite = inviteService.getInvite(workspaceId);
+        Invite invite = inviteService.getInvite(workspaceId, profile.getId());
 
         return ResponseEntity.ok(InviteDto.builder()
                 .code(invite.getCode())

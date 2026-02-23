@@ -7,7 +7,6 @@ import com.andhug.relay.message.api.dto.MessageDto;
 import com.andhug.relay.message.internal.MessageEntity;
 import com.andhug.relay.message.internal.MessageRepository;
 import com.andhug.relay.profile.Profile;
-import com.andhug.relay.profile.ProfileContext;
 import com.andhug.relay.profile.ProfileDto;
 import com.andhug.relay.profile.ProfileService;
 import com.andhug.relay.profile.internal.ProfileMapper;
@@ -35,11 +34,9 @@ public class MessageService {
     private final ProfileService profileService;
 
     @Transactional
-    public MessageDto createMessage(CreateMessageRequest request) {
+    public MessageDto createMessage(CreateMessageRequest request, Profile author) {
 
         var toSave = new MessageEntity();
-
-        Profile author = ProfileContext.getCurrentProfile();
 
         toSave.setId(snowflakeGenerator.nextId());
         toSave.setAuthorId(author.getId());

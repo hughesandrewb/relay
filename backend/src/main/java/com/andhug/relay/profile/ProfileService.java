@@ -35,6 +35,7 @@ public class ProfileService {
         try {
             profile = getProfile(sub);
         } catch (ProfileNotFoundException e) {
+            log.info("Creating new profile {}", sub);
             profile = createProfile(jwt);
         }
 

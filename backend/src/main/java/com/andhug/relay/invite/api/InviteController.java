@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,12 +69,13 @@ public class InviteController {
             @ApiResponse(responseCode = "200", description = "Accepted invite successfully")
     })
     public ResponseEntity<InviteDto> acceptInvite(
+            @AuthenticationPrincipal Profile profile,
             @Parameter(in = ParameterIn.PATH, required = true, name = "invite-code", schema = @Schema(type = "string"))
             @PathVariable("invite-code") String inviteCode) {
 
         log.info("Accepting invite {}", inviteCode);
 
-        inviteService.acceptInvite(inviteCode);
+        inviteService.acceptInvite(inviteCode, profile.getId());
 
         return ResponseEntity.ok(InviteDto.builder().build());
     }
