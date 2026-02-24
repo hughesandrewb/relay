@@ -17,10 +17,10 @@
 	}
 </script>
 
-<div class="flex h-full w-32 flex-col justify-between border-r">
-	<div class="flex h-full flex-col items-center gap-2 p-2">
+<div class="flex h-full w-20 flex-col justify-between border-r">
+	<div class="flex h-full flex-col items-center gap-2">
 		<button class="flex cursor-pointer">
-			<Logo size={72} />
+			<Logo size={80} />
 		</button>
 		{#if !workspaceStore.isLoading}
 			<div class="my-2 flex flex-col">
