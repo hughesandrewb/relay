@@ -1,5 +1,8 @@
 package com.andhug.relay.profile;
 
+import com.andhug.relay.friend.api.FriendService;
+import com.andhug.relay.friend.api.dto.FriendSummaryDto;
+import com.andhug.relay.friend.api.models.Friendship;
 import com.andhug.relay.room.Room;
 import com.andhug.relay.room.RoomDto;
 import com.andhug.relay.room.RoomService;
@@ -13,13 +16,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/profiles")
@@ -32,6 +37,8 @@ public class ProfileController {
     private final WorkspaceService workspaceService;
 
     private final RoomService roomService;
+
+    private final FriendService friendService;
 
     private final ProfileMapper profileMapper;
 
@@ -83,4 +90,50 @@ public class ProfileController {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @GetMapping(value = "/{id}/friends", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<FriendSummaryDto> getFriends(
+            @PathVariable UUID id,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+
+        List<Profile> friends = friendService.getFriends(id, pageable);
+
+        return friends.stream()
+                .map(friend -> FriendSummaryDto.builder()
+                        .id(friend.getId())
+                        .username(friend.getUsername())
+                        .build())
+                .toList();
+    }
+
+    @GetMapping(value = "/me/friends")
+    public List<FriendSummaryDto> getFriends(
+            @AuthenticationPrincipal Profile profile,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+
+        return getFriends(profile.getId(), pageable);
+    }
+
+    @PostMapping(value = "/{addresseeId}/friends/request")
+    public Friendship requestFriend(
+            @AuthenticationPrincipal Profile profile,
+            @PathVariable UUID addresseeId
+    ) {
+
+        Friendship friendship = friendService.sendRequest(profile.getId(), addresseeId);
+
+        return friendship;
+    }
+
+    @PutMapping("/{requesterId}/friends/accept")
+    public Friendship acceptFriend(
+            @AuthenticationPrincipal Profile profile,
+            @PathVariable UUID requesterId
+    ) {
+
+        Friendship friendship = friendService.acceptRequest(requesterId, profile.getId());
+
+        return friendship;
+    }
 }

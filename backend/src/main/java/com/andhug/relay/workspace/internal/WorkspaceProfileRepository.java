@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface WorkspaceProfileRepository extends JpaRepository<WorkspaceProfileEntity, UUID> {
+public interface WorkspaceProfileRepository extends JpaRepository<WorkspaceProfileEntity, WorkspaceProfileKey> {
 
     boolean existsByWorkspaceIdAndProfileId(UUID workspaceId, UUID profileId);
 }
