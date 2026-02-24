@@ -79,27 +79,16 @@ public class FriendService {
 
     @Transactional
     public Friendship acceptRequest(UUID requesterId, UUID addresseeId) {
+        FriendshipEntity friendship = friendshipRepository
+                .findByRequesterIdAndAddresseeId(requesterId, addresseeId)
+                .orElseThrow(() -> new IllegalArgumentException("No pending friend request found"));
 
-        if (requesterId.equals(addresseeId)) {
-            throw new IllegalArgumentException("Cannot accept a friend request to yourself");
-        }
-
-        Optional<FriendshipEntity> friendshipEntity = friendshipRepository.findBetweenUsers(requesterId, addresseeId);
-
-        if (friendshipEntity.isEmpty()) {
-            throw new IllegalArgumentException("Could not find friend request");
-        }
-
-        FriendshipEntity friendship = friendshipEntity.get();
-
-        if (friendship.getStatus().equals(FriendshipStatus.ACCEPTED)
-                || friendship.getStatus().equals(FriendshipStatus.REJECTED)) {
-            throw new IllegalArgumentException("A friendship already exists");
+        if (friendship.getStatus() != FriendshipStatus.PENDING) {
+            throw new IllegalStateException("Friend request is already " + friendship.getStatus().name().toLowerCase());
         }
 
         friendship.setStatus(FriendshipStatus.ACCEPTED);
-        FriendshipEntity saved = friendshipRepository.save(friendship);
 
-        return friendshipMapper.toDomain(saved);
+        return friendshipMapper.toDomain(friendship);
     }
 }
