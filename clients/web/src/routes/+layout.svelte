@@ -31,6 +31,6 @@
 
 <svelte:head>
 	<link rel="icon" type="image/svg" href={favicon} />
-	<title>Relay</title>
+	<title>relay</title>
 </svelte:head>
 {@render children()}

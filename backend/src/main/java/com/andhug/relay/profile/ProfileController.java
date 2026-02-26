@@ -3,6 +3,7 @@ package com.andhug.relay.profile;
 import com.andhug.relay.friend.api.FriendService;
 import com.andhug.relay.friend.api.dto.FriendSummaryDto;
 import com.andhug.relay.friend.api.models.Friendship;
+import com.andhug.relay.friend.internal.FriendshipMapper;
 import com.andhug.relay.room.Room;
 import com.andhug.relay.room.RoomDto;
 import com.andhug.relay.room.RoomService;
@@ -16,8 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +40,8 @@ public class ProfileController {
     private final FriendService friendService;
 
     private final ProfileMapper profileMapper;
+
+    private final FriendshipMapper friendshipMapper;
 
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get current profile's information", description = "Returns the current profile's information")
@@ -92,27 +93,22 @@ public class ProfileController {
 
     @GetMapping(value = "/{id}/friends", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<FriendSummaryDto> getFriends(
-            @PathVariable UUID id,
-            @PageableDefault(size = 20) Pageable pageable
+            @PathVariable UUID id
     ) {
 
-        List<Profile> friends = friendService.getFriends(id, pageable);
+        List<Profile> friends = friendService.getFriends(id);
 
         return friends.stream()
-                .map(friend -> FriendSummaryDto.builder()
-                        .id(friend.getId())
-                        .username(friend.getUsername())
-                        .build())
+                .map(friendshipMapper::profileToFriendSummaryDto)
                 .toList();
     }
 
     @GetMapping(value = "/me/friends")
     public List<FriendSummaryDto> getFriends(
-            @AuthenticationPrincipal Profile profile,
-            @PageableDefault(size = 20) Pageable pageable
+            @AuthenticationPrincipal Profile profile
     ) {
 
-        return getFriends(profile.getId(), pageable);
+        return getFriends(profile.getId());
     }
 
     @PostMapping(value = "/{addresseeId}/friends/request")

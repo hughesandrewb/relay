@@ -5,8 +5,11 @@
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import Modal from '$lib/components/common/Modal.svelte';
 	import ProfilePopover from '$lib/components/profile/ProfilePopover.svelte';
+	import { page } from '$app/state';
 
 	let { children } = $props();
+
+	let workspaceId: string | undefined = $derived(page.params.workspaceId);
 </script>
 
 <div class="flex h-dvh w-dvw overflow-hidden">
@@ -14,9 +17,11 @@
 		<aside>
 			<WorkspaceList />
 		</aside>
-		<aside>
-			<RoomList />
-		</aside>
+		{#if workspaceId}
+			<aside>
+				<RoomList />
+			</aside>
+		{/if}
 		<ProfilePopover />
 		<main class="main-content h-full w-full">
 			{@render children()}

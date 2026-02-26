@@ -5,6 +5,7 @@
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import CreateWorkspace from '$lib/components/workspace/CreateWorkspace.svelte';
 	import Logo from '$lib/components/Logo.svelte';
+	import { goto } from '$app/navigation';
 
 	const currentWorkspaceId: string | undefined = $derived(page.params.workspaceId);
 
@@ -15,11 +16,15 @@
 	function showCreateWorkspaceModal() {
 		modalStore.openModal(CreateWorkspace);
 	}
+
+	function handleLogoClick() {
+		goto('/rooms');
+	}
 </script>
 
 <div class="flex h-full w-20 flex-col justify-between border-r">
 	<div class="flex h-full flex-col items-center gap-2">
-		<button class="flex cursor-pointer">
+		<button class="flex cursor-pointer" onclick={() => handleLogoClick()}>
 			<Logo size={80} />
 		</button>
 		{#if !workspaceStore.isLoading}
@@ -38,7 +43,7 @@
 						</a>
 						<div class="size-1 rounded-full bg-black {true && 'invisible'}"></div>
 						<div
-							class="absolute left-full hidden rounded-xl border bg-white p-2 whitespace-nowrap shadow-lg group-hover:block"
+							class="absolute left-full z-10 hidden rounded-xl border bg-white p-2 whitespace-nowrap shadow-lg group-hover:block"
 						>
 							{workspace.name}
 						</div>

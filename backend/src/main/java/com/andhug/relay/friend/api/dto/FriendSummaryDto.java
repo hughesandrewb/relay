@@ -7,5 +7,6 @@ import java.util.UUID;
 @Builder
 public record FriendSummaryDto(
         UUID id,
-        String username
+        String username,
+        String accentColor
 ) {}

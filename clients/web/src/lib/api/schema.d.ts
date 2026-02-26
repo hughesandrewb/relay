@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/profiles/{requesterId}/friends/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["acceptFriend"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/workspaces": {
         parameters: {
             query?: never;
@@ -58,6 +74,22 @@ export interface paths {
         get: operations["getMessages"];
         put?: never;
         post: operations["createMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profiles/{addresseeId}/friends/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["requestFriend"];
         delete?: never;
         options?: never;
         head?: never;
@@ -180,6 +212,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/profiles/{id}/friends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getFriends"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/profiles/me": {
         parameters: {
             query?: never;
@@ -240,10 +288,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/profiles/me/friends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getFriends_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Friendship: {
+            /** Format: uuid */
+            requesterId?: string;
+            /** Format: uuid */
+            addresseeId?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "ACCEPTED" | "REJECTED";
+        };
         CreateWorkspaceRequest: {
             name: string;
         };
@@ -291,6 +363,12 @@ export interface components {
         RealtimeTicketDto: {
             code?: string;
         };
+        FriendSummaryDto: {
+            /** Format: uuid */
+            id?: string;
+            username?: string;
+            accentColor?: string;
+        };
         WorkspaceSummaryDto: {
             /** Format: uuid */
             id?: string;
@@ -306,6 +384,28 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    acceptFriend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requesterId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Friendship"];
+                };
+            };
+        };
+    };
     createWorkspace: {
         parameters: {
             query?: never;
@@ -439,6 +539,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageDto"];
+                };
+            };
+        };
+    };
+    requestFriend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                addresseeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Friendship"];
                 };
             };
         };
@@ -656,6 +778,28 @@ export interface operations {
             };
         };
     };
+    getFriends: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FriendSummaryDto"][];
+                };
+            };
+        };
+    };
     getMe: {
         parameters: {
             query?: never;
@@ -730,6 +874,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoomDto"][];
+                };
+            };
+        };
+    };
+    getFriends_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FriendSummaryDto"][];
                 };
             };
         };
