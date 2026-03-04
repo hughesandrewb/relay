@@ -12,6 +12,10 @@ class KeycloakAuthProvider implements AuthProvider {
 			realm: 'relay',
 			clientId: 'web'
 		});
+
+		this.keycloak.onTokenExpired = () => {
+			this.keycloak.updateToken(30).catch(() => this.keycloak.logout());
+		};
 	}
 
 	async init(): Promise<boolean> {
