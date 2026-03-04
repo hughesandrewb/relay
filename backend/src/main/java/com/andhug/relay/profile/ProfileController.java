@@ -4,10 +4,12 @@ import com.andhug.relay.friend.api.FriendService;
 import com.andhug.relay.friend.api.dto.FriendSummaryDto;
 import com.andhug.relay.friend.api.models.Friendship;
 import com.andhug.relay.friend.internal.FriendshipMapper;
-import com.andhug.relay.room.Room;
-import com.andhug.relay.room.RoomDto;
-import com.andhug.relay.room.RoomService;
+import com.andhug.relay.room.api.Room;
+import com.andhug.relay.room.api.dto.RoomDto;
+import com.andhug.relay.room.api.RoomService;
 import com.andhug.relay.profile.internal.ProfileMapper;
+import com.andhug.relay.room.api.dto.request.CreateDirectMessageRequest;
+import com.andhug.relay.room.internal.RoomMapper;
 import com.andhug.relay.workspace.api.Workspace;
 import com.andhug.relay.workspace.api.WorkspaceService;
 import com.andhug.relay.workspace.api.dto.WorkspaceSummaryDto;
@@ -23,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -33,6 +36,8 @@ import java.util.UUID;
 @Tag(name = "Profile Controller", description = "APIs for managing profiles")
 public class ProfileController {
 
+    private final ProfileService profileService;
+
     private final WorkspaceService workspaceService;
 
     private final RoomService roomService;
@@ -42,6 +47,8 @@ public class ProfileController {
     private final ProfileMapper profileMapper;
 
     private final FriendshipMapper friendshipMapper;
+
+    private final RoomMapper roomMapper;
 
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get current profile's information", description = "Returns the current profile's information")
@@ -86,9 +93,30 @@ public class ProfileController {
             @AuthenticationPrincipal Profile profile
     ) {
 
-        List<Room> rooms = roomService.getRoomsByProfileId(profile.getId());
+        return roomService
+                .getDirectMessages(profile.getId())
+                .stream()
+                .map(roomMapper::toDto)
+                .toList();
+    }
 
-        throw new UnsupportedOperationException("Not supported yet.");
+    @PostMapping(value = "/me/rooms", produces =  MediaType.APPLICATION_JSON_VALUE, consumes =  MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Create direct message room", description = "Creates a direct message room and includes current user and recipient as participants")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created direct message room")
+    })
+    public RoomDto createDirectMessage(
+            @AuthenticationPrincipal Profile profile,
+            @RequestBody CreateDirectMessageRequest request
+    ) {
+
+        Profile recipient = profileService.getProfile(request.recipientId());
+
+        Set<UUID> participants = Set.of(profile.getId(), recipient.getId());
+
+        Room dm = roomService.createDirectMessage(participants);
+
+        return roomMapper.toDto(dm);
     }
 
     @GetMapping(value = "/{id}/friends", produces = MediaType.APPLICATION_JSON_VALUE)

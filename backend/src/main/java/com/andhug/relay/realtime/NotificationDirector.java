@@ -3,8 +3,8 @@ package com.andhug.relay.realtime;
 import com.andhug.relay.message.api.events.MessageCreated;
 import com.andhug.relay.realtime.registry.Connection;
 import com.andhug.relay.realtime.registry.ConnectionRegistry;
-import com.andhug.relay.room.Room;
-import com.andhug.relay.room.RoomService;
+import com.andhug.relay.room.api.Room;
+import com.andhug.relay.room.api.RoomService;
 import com.andhug.relay.workspace.api.Workspace;
 import com.andhug.relay.workspace.api.WorkspaceService;
 import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
@@ -63,13 +63,23 @@ public class NotificationDirector {
         for (Workspace workspace : workspaces) {
             List<Room> rooms = roomService.getRoomsByWorkspaceId(workspace.getId());
 
-            log.info("Subscribing to {} rooms for {}", rooms.size(), workspace.getId());
+            log.info("Subscribing to {} rooms for workspace {}", rooms.size(), workspace.getId());
 
             for (Room room : rooms) {
                 roomToProfiles
                         .computeIfAbsent(room.getId(), k -> new HashSet<>())
                         .add(profileId);
             }
+        }
+
+        List<Room> directMessages =  roomService.getDirectMessages(profileId);
+        for (Room room : directMessages) {
+
+            log.info("Subscribing to direct message {}", room.getId());
+
+            roomToProfiles
+                    .computeIfAbsent(room.getId(), k -> new HashSet<>())
+                    .add(profileId);
         }
     }
 }

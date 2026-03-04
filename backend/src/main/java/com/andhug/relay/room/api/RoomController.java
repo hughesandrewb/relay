@@ -1,10 +1,11 @@
-package com.andhug.relay.room;
+package com.andhug.relay.room.api;
 
 import com.andhug.relay.message.api.dto.CreateMessageHttpRequest;
 import com.andhug.relay.message.api.dto.CreateMessageRequest;
 import com.andhug.relay.message.api.dto.MessageDto;
 import com.andhug.relay.message.api.MessageService;
 import com.andhug.relay.profile.Profile;
+import com.andhug.relay.room.api.dto.response.GetDmsResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;

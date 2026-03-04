@@ -18,7 +18,7 @@
 	}
 
 	function handleLogoClick() {
-		goto('/rooms');
+		goto('/rooms/me');
 	}
 </script>
 

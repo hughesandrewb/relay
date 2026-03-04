@@ -96,6 +96,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/profiles/me/rooms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current profile's direct messages
+         * @description Returns a list of direct message objects that the current profile is a participant of
+         */
+        get: operations["getDirectMessages"];
+        put?: never;
+        /**
+         * Create direct message room
+         * @description Creates a direct message room and includes current user and recipient as participants
+         */
+        post: operations["createDirectMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/invites/{invite-code}": {
         parameters: {
             query?: never;
@@ -268,26 +292,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/profiles/me/rooms": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get current profile's direct messages
-         * @description Returns a list of direct message objects that the current profile is a participant of
-         */
-        get: operations["getDirectMessages"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/profiles/me/friends": {
         parameters: {
             query?: never;
@@ -326,12 +330,22 @@ export interface components {
             /** Format: uuid */
             ownerId?: string;
         };
+        ProfileDto: {
+            /** Format: uuid */
+            id?: string;
+            username?: string;
+            displayName?: string;
+            accentColor?: string;
+        };
         RoomDto: {
             /** Format: uuid */
             id?: string;
             name?: string;
             /** Format: uuid */
             workspaceId?: string;
+            /** Format: int32 */
+            type?: number;
+            participants?: components["schemas"]["ProfileDto"][];
         };
         CreateMessageHttpRequest: {
             content?: string;
@@ -344,12 +358,9 @@ export interface components {
             roomId?: string;
             content?: string;
         };
-        ProfileDto: {
+        CreateDirectMessageRequest: {
             /** Format: uuid */
-            id?: string;
-            username?: string;
-            displayName?: string;
-            accentColor?: string;
+            recipientId?: string;
         };
         InviteDto: {
             code?: string;
@@ -561,6 +572,50 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["Friendship"];
+                };
+            };
+        };
+    };
+    getDirectMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of current profile's direct messages */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomDto"][];
+                };
+            };
+        };
+    };
+    createDirectMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDirectMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description Created direct message room */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomDto"];
                 };
             };
         };
@@ -854,26 +909,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WorkspaceSummaryDto"][];
-                };
-            };
-        };
-    };
-    getDirectMessages: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of current profile's direct messages */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RoomDto"][];
                 };
             };
         };

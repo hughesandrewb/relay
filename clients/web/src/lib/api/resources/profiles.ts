@@ -4,11 +4,14 @@ import type { WorkspaceDto } from '$lib/api/resources/workspaces';
 import {
 	createFriend,
 	createProfile,
+	createRoom,
 	createWorkspace,
 	type Friend,
 	type Profile,
+	type Room,
 	type Workspace
 } from '$lib/models';
+import type { RoomDto } from './rooms';
 
 export type ProfileDto = components['schemas']['ProfileDto'];
 export type FriendSummaryDto = components['schemas']['FriendSummaryDto'];
@@ -28,5 +31,10 @@ export const profileApi = {
 		const dto: FriendSummaryDto[] = await handleResponse(client.GET('/api/profiles/me/friends'));
 
 		return dto.map((friend) => createFriend(friend));
+	},
+	getDirectMessages: async (): Promise<Room[]> => {
+		const dto: RoomDto[] = await handleResponse(client.GET('/api/profiles/me/rooms'));
+
+		return dto.map((room) => createRoom(room));
 	}
 };

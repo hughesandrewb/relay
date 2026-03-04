@@ -1,5 +1,6 @@
 package com.andhug.relay.room.internal;
 
+import com.andhug.relay.room.api.RoomType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,8 @@ public class RoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    private RoomType type;
 
     @Column(length = 100)
     private String name;
