@@ -59,7 +59,7 @@
 				<button
 					id="copyBtn"
 					onclick={() => handleInviteUrlCopy()}
-					class="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 transition-all duration-150 hover:border-zinc-500 hover:bg-zinc-700 active:scale-95"
+					class="flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 transition-all duration-150 hover:border-zinc-500 hover:bg-zinc-700 active:scale-95"
 				>
 					{#if !copied}
 						<!-- Copy icon -->

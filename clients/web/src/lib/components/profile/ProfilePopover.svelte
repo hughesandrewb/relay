@@ -17,7 +17,7 @@
 				</div>
 			</div>
 			<div>
-				<div>{profileStore.currentProfile.displayName}</div>
+				<div class="text-lg font-medium">{profileStore.currentProfile.displayName}</div>
 				<div>@{profileStore.currentProfile.username}</div>
 			</div>
 		</div>

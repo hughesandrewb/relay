@@ -22,7 +22,7 @@
 	bind:this={dialog}
 >
 	<div class="relative p-4" use:clickOutside={closeModal}>
-		<button class="absolute top-5 right-5 cursor-pointer" onclick={closeModal}>
+		<button class="absolute top-0 right-0 cursor-pointer" onclick={closeModal}>
 			<X />
 		</button>
 		{@render children?.()}

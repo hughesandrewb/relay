@@ -72,9 +72,9 @@
 <svelte:window onmouseup={stopResize} onmousemove={resize} />
 
 <aside class="flex h-full flex-row border-r" style="width: {roomListWidth}px;">
-	<div class="flex h-full w-full flex-col gap-2 p-2">
-		<div class="flex flex-row justify-between">
-			<span class="basis-64 text-xl">
+	<div class="flex h-full w-full flex-col divide-y">
+		<div class="flex flex-row justify-between p-2">
+			<span class="basis-64 text-xl font-medium">
 				{currentWorkspace?.name}
 			</span>
 			<div class="relative">
@@ -83,7 +83,7 @@
 				</button>
 				{#if showWorkspaceOptions}
 					<div
-						class="absolute z-10 flex w-64 flex-col rounded-xl border bg-white text-lg shadow-2xl"
+						class="absolute z-10 flex w-64 flex-col rounded border bg-white text-lg shadow-2xl"
 						use:clickOutside={hideShowWorkspaceOptions}
 					>
 						<button
@@ -114,15 +114,14 @@
 				{/if}
 			</div>
 		</div>
-		<hr class="w-full" />
 		{#if !workspaceStore.isLoading}
-			<div class="flex h-full flex-col gap-2">
+			<div class="flex h-full flex-col gap-2 p-2">
 				{#each rooms as room (room.id)}
 					<div
-						class="flex flex-row items-center gap-2 rounded-xl px-4 py-1 {currentRoomId ===
-							room.id && 'bg-black/10'}"
+						class="flex flex-row items-center gap-2 rounded px-4 py-1 {currentRoomId === room.id &&
+							'bg-black/10'}"
 					>
-						<span class="text-2xl" style="color: #{room.color ?? '000000'}">#</span>
+						<span class="text-2xl font-medium" style="color: #{room.color ?? '000000'}">#</span>
 						<a
 							class="cursor-pointer text-xl transition-all duration-150 ease-in-out"
 							href="/rooms/{currentWorkspaceId}/{room.id}"
