@@ -6,7 +6,7 @@
 	import Modal from '$lib/components/common/Modal.svelte';
 	import ProfilePopover from '$lib/components/profile/ProfilePopover.svelte';
 	import { page } from '$app/state';
-	import FriendList from '$lib/components/friends/FriendList.svelte';
+	import DirectMessageList from '$lib/components/DirectMessageList.svelte';
 
 	let { children } = $props();
 
@@ -22,7 +22,7 @@
 			{#if workspaceId && workspaceId !== 'me'}
 				<RoomList />
 			{:else}
-				<FriendList />
+				<DirectMessageList />
 			{/if}
 		</aside>
 		<ProfilePopover />
