@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,6 +29,18 @@ public class WorkspaceService {
     private final WorkspaceMapper workspaceMapper;
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    @Transactional
+    public Workspace getWorkspace(UUID id) {
+
+        Optional<WorkspaceEntity> workspaceEntity = workspaceRepository.findById(id);
+
+        if (workspaceEntity.isEmpty()) {
+            throw new RuntimeException("Workspace with id " + id + " not found");
+        }
+
+        return workspaceMapper.toDomain(workspaceEntity.get());
+    }
 
     @Transactional
     public Workspace createWorkspace(Workspace workspace, UUID ownerId) {
@@ -60,6 +73,19 @@ public class WorkspaceService {
         res.setOwnerId(profileEntity.getId());
 
         return res;
+    }
+
+    @Transactional
+    public Workspace updateWorkspace(UUID workspaceId, Workspace workspace) {
+
+        WorkspaceEntity updatedWorkspace = workspaceRepository.findById(workspaceId).orElseThrow();
+
+        if (workspace.getName() != null) {
+            updatedWorkspace.setName(workspace.getName());
+        }
+
+        return workspaceMapper
+                .toDomain(workspaceRepository.save(updatedWorkspace));
     }
 
     @Transactional(readOnly = true)

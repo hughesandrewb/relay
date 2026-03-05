@@ -10,6 +10,7 @@ import com.andhug.relay.room.api.dto.RoomDto;
 import com.andhug.relay.room.api.RoomService;
 import com.andhug.relay.workspace.api.dto.WorkspaceDto;
 import com.andhug.relay.workspace.api.dto.request.CreateWorkspaceRequest;
+import com.andhug.relay.workspace.api.dto.request.UpdateWorkspaceRequest;
 import com.andhug.relay.workspace.internal.WorkspaceMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -79,6 +80,29 @@ public class WorkspaceController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .body(workspaceMapper.toDto(workspace));
+    }
+
+    @PatchMapping(value = "/{workspace-id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update workspace", description = "Update a workspace with the provided details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Workspace updated successfully")
+    })
+    public ResponseEntity<WorkspaceDto> updateWorkspace(
+            @AuthenticationPrincipal Profile profile,
+            @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
+            @PathVariable("workspace-id") UUID workspaceId,
+            @RequestBody UpdateWorkspaceRequest request
+    ) {
+
+        var updatedWorkspace = Workspace.builder()
+                .name(request.name())
+                .build();
+
+        Workspace workspace = workspaceService.updateWorkspace(workspaceId, updatedWorkspace);
+
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
                 .body(workspaceMapper.toDto(workspace));
     }
 

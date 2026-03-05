@@ -3,9 +3,9 @@
 	import { page } from '$app/state';
 	import { workspaceStore } from '$lib/stores/workspace.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
-	import CreateWorkspace from '$lib/components/workspace/CreateWorkspace.svelte';
 	import Logo from '$lib/components/Logo.svelte';
 	import { goto } from '$app/navigation';
+	import WorkspaceForm from '$lib/components/workspace/WorkspaceForm.svelte';
 
 	const currentWorkspaceId: string | undefined = $derived(page.params.workspaceId);
 
@@ -14,7 +14,7 @@
 	});
 
 	function showCreateWorkspaceModal() {
-		modalStore.openModal(CreateWorkspace);
+		modalStore.openModal(WorkspaceForm);
 	}
 
 	function handleLogoClick() {

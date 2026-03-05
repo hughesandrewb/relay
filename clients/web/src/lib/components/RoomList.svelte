@@ -9,6 +9,7 @@
 	import type { Room, Workspace } from '$lib/models';
 	import WorkspaceInvite from '$lib/components/workspace/WorkspaceInvite.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
+	import WorkspaceForm from './workspace/WorkspaceForm.svelte';
 
 	const currentWorkspaceId: UUID | undefined = $derived(page.params.workspaceId as UUID);
 	const currentRoomId: UUID | undefined = $derived(page.params.roomId as UUID);
@@ -88,7 +89,10 @@
 					>
 						<button
 							class="flex cursor-pointer flex-row gap-2 p-3"
-							onclick={() => console.log('Show workspace settings')}
+							onclick={() => {
+								modalStore.openModal(WorkspaceForm, { existingWorkspace: currentWorkspace! });
+								hideShowWorkspaceOptions();
+							}}
 						>
 							<Settings />
 							<span>Workspace Settings</span>

@@ -8,6 +8,7 @@ import { createInvite, type Invite } from '$lib/models/invite';
 
 export type WorkspaceDto = components['schemas']['WorkspaceDto'];
 export type CreateWorkspaceRequest = components['schemas']['CreateWorkspaceRequest'];
+export type UpdateWorkspaceRequest = components['schemas']['UpdateWorkspaceRequest'];
 
 export const workspaceApi = {
 	getRooms: async (workspaceId: UUID): Promise<Room[]> => {
@@ -36,6 +37,21 @@ export const workspaceApi = {
 		const dto: WorkspaceDto = await handleResponse(
 			client.POST('/api/workspaces', {
 				body: createWorkspaceRequest
+			})
+		);
+
+		return createWorkspace(dto);
+	},
+	updateWorkspace: async (
+		workspaceId: UUID,
+		updateWorkspaceRequest: UpdateWorkspaceRequest
+	): Promise<Workspace> => {
+		const dto: WorkspaceDto = await handleResponse(
+			client.PATCH(`/api/workspaces/{workspace-id}`, {
+				params: {
+					path: { 'workspace-id': workspaceId }
+				},
+				body: updateWorkspaceRequest
 			})
 		);
 

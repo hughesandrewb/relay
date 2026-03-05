@@ -161,7 +161,11 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update workspace
+         * @description Update a workspace with the provided details
+         */
+        patch: operations["updateWorkspace"];
         trace?: never;
     };
     "/api/workspaces/{workspace-id}/members": {
@@ -370,6 +374,9 @@ export interface components {
             expiresAt?: string;
             /** Format: date-time */
             createdAt?: string;
+        };
+        UpdateWorkspaceRequest: {
+            name?: string;
         };
         RealtimeTicketDto: {
             code?: string;
@@ -695,6 +702,32 @@ export interface operations {
             };
             /** @description Workspace not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceDto"];
+                };
+            };
+        };
+    };
+    updateWorkspace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                "workspace-id": string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateWorkspaceRequest"];
+            };
+        };
+        responses: {
+            /** @description Workspace updated successfully */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

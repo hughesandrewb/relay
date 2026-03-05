@@ -22,6 +22,13 @@ class WorkspaceStore {
 	addWorkspace(workspace: Workspace) {
 		this.workspacesById.set(workspace.id, workspace);
 	}
+
+	updateWorkspace(workspace: Workspace) {
+		if (!this.workspacesById.has(workspace.id)) {
+			return;
+		}
+		this.workspacesById.set(workspace.id, workspace);
+	}
 }
 
 export const workspaceStore = new WorkspaceStore();
