@@ -5,7 +5,7 @@ import type { RealtimeTicket } from '$lib/models/realtime';
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = 3000;
 
-export type GatewayEvent = 'MESSAGAE_CREATE';
+export type GatewayEvent = 'MESSAGE_CREATE';
 
 const GatewayOpcode = {
 	Dispatch: 0,
