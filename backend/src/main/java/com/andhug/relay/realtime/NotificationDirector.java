@@ -42,41 +42,33 @@ public class NotificationDirector {
         Set<UUID> toNotify = roomToProfiles.get(event.roomId());
 
         var message = RealtimeMessagePayload.builder()
-                .opcode(GatewayOpcode.DISPATCH)
-                .type(GatewayEvent.MESSAGE_CREATE)
-                .data(event.message())
-                .build();
+            .opcode(GatewayOpcode.DISPATCH)
+            .type(GatewayEvent.MESSAGE_CREATE)
+            .data(event.message())
+            .build();
 
-        for (UUID profileId : toNotify) {
-            Connection connection = connectionRegistry.getConnection(profileId);
-
-            if (connection == null || !connection.isActive()) {
-                log.warn("Connection {} is not open", profileId);
-                continue;
-            }
-
-            connection.sendMessage(message);
-        }
-    }
+        broadcast(toNotify, message);}
 
     @ApplicationModuleListener
     void onWorkspaceUpdate(WorkspaceUpdated event) {
 
-        log.info("Workspace {} updated, notifying members", event.workspaceId());
-
         // this will get all the members of the workspace, even if they are offline
         // rethink this after implementing presence better
         Set<UUID> toNotify = workspaceService.getMemberIds(event.workspaceId())
-                .stream()
-                .collect(Collectors.toSet());
+            .stream()
+            .collect(Collectors.toSet());
 
         var message = RealtimeMessagePayload.builder()
-                .opcode(GatewayOpcode.DISPATCH)
-                .type(GatewayEvent.WORKSPACE_UPDATE)
-                .data(workspaceMapper.toDto(event.workspace()))
-                .build();
+            .opcode(GatewayOpcode.DISPATCH)
+            .type(GatewayEvent.WORKSPACE_UPDATE)
+            .data(workspaceMapper.toDto(event.workspace()))
+            .build();
 
-        for (UUID profileId : toNotify) {
+        broadcast(toNotify, message);
+    }
+
+    private void broadcast(Set<UUID> recipients, RealtimeMessagePayload message) {
+        for (UUID profileId : recipients) {
             Connection connection = connectionRegistry.getConnection(profileId);
 
             if (connection == null || !connection.isActive()) {
@@ -104,8 +96,8 @@ public class NotificationDirector {
 
             for (Room room : rooms) {
                 roomToProfiles
-                        .computeIfAbsent(room.getId(), k -> new HashSet<>())
-                        .add(profileId);
+                    .computeIfAbsent(room.getId(), k -> new HashSet<>())
+                    .add(profileId);
             }
         }
 
@@ -115,8 +107,8 @@ public class NotificationDirector {
             log.info("Subscribing to direct message {}", room.getId());
 
             roomToProfiles
-                    .computeIfAbsent(room.getId(), k -> new HashSet<>())
-                    .add(profileId);
+                .computeIfAbsent(room.getId(), k -> new HashSet<>())
+                .add(profileId);
         }
     }
 }
