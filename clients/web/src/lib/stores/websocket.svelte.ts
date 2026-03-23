@@ -5,13 +5,29 @@ import type { RealtimeTicket } from '$lib/models/realtime';
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_DELAY = 3000;
 
+export type GatewayEvent = 'MESSAGAE_CREATE';
+
+const GatewayOpcode = {
+	Dispatch: 0,
+	Heartbeat: 1,
+	Identify: 2,
+	PresenceUpdate: 3,
+	Resume: 6,
+	Reconnect: 7,
+	InvalidSession: 9,
+	Hello: 10,
+	HeartbeatAck: 11
+} as const;
+
+type GatewayOpcode = typeof GatewayOpcode[keyof typeof GatewayOpcode];
+
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
-type OpCode = string;
-
 interface RealtimeMessage<T = unknown> {
-	op: OpCode;
-	data: T;
+	op: GatewayOpcode;
+	d: T;
+	s: number;
+	t: GatewayEvent;
 }
 
 type MessageHandler<T = unknown> = (data: T) => void;
@@ -23,15 +39,15 @@ class WebSocketStore {
 	reconnectionAttempts: number = $state(0);
 
 	private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
-	private handlers = new Map<OpCode, Set<MessageHandler>>();
+	private handlers = new Map<GatewayEvent, Set<MessageHandler>>();
 	private wildcardHandlers = new Set<MessageHandler>();
 
-	on<T>(op: OpCode, handler: MessageHandler<T>): UnsubscribeFn {
-		let opHandlers = this.handlers.get(op);
+	on<T>(t: GatewayEvent, handler: MessageHandler<T>): UnsubscribeFn {
+		let opHandlers = this.handlers.get(t);
 		if (!opHandlers) {
 			// eslint-disable-next-line svelte/prefer-svelte-reactivity
 			opHandlers = new Set<MessageHandler>();
-			this.handlers.set(op, opHandlers);
+			this.handlers.set(t, opHandlers);
 		}
 
 		opHandlers.add(handler as MessageHandler);
@@ -43,9 +59,9 @@ class WebSocketStore {
 		return () => this.wildcardHandlers.delete(handler as MessageHandler);
 	}
 
-	clearHandlers(op?: OpCode) {
-		if (op) {
-			this.handlers.delete(op);
+	clearHandlers(t?: GatewayEvent) {
+		if (t) {
+			this.handlers.delete(t);
 			return;
 		}
 		this.handlers.clear();
@@ -55,14 +71,14 @@ class WebSocketStore {
 	private dispatch(message: RealtimeMessage) {
 		this.wildcardHandlers.forEach((handler) => handler(message));
 
-		const opHandlers: Set<MessageHandler> | undefined = this.handlers.get(message.op);
+		const opHandlers: Set<MessageHandler> | undefined = this.handlers.get(message.t);
 
 		if (!opHandlers || opHandlers.size === 0) {
-			console.warn(`No handlers registered for op: ${message.op}`);
+			console.warn(`No handlers registered for event: ${message.t}`);
 			return;
 		}
 
-		opHandlers.forEach((handler) => handler(message.data));
+		opHandlers.forEach((handler) => handler(message.d));
 	}
 
 	private handleMessage = (event: MessageEvent) => {

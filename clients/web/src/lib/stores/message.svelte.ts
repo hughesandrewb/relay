@@ -11,7 +11,7 @@ class MessageStore {
 	messagesByRoomId = new SvelteMap<UUID, Message[]>();
 
 	constructor() {
-		wsStore.on('DISPATCH', (data: MessageDto) => {
+		wsStore.on('MESSAGAE_CREATE', (data: MessageDto) => {
 			const message: Message = createMessage(data);
 			if (message.author.id === profileStore.currentProfile?.id) {
 				return;

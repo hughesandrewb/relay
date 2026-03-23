@@ -1,6 +1,7 @@
 package com.andhug.relay.realtime;
 
 import com.andhug.relay.message.api.events.MessageCreated;
+import com.andhug.relay.realtime.dto.RealtimeMessagePayload;
 import com.andhug.relay.realtime.registry.Connection;
 import com.andhug.relay.realtime.registry.ConnectionRegistry;
 import com.andhug.relay.room.api.Room;
@@ -34,8 +35,9 @@ public class NotificationDirector {
 
         Set<UUID> toNotify = roomToProfiles.get(event.roomId());
 
-        var message = MessagePayload.builder()
-                .op(GatewayOpcode.DISPATCH)
+        var message = RealtimeMessagePayload.builder()
+                .opcode(GatewayOpcode.DISPATCH)
+                .type(GatewayEvent.MESSAGE_CREATE)
                 .data(event.message())
                 .build();
 
