@@ -29,7 +29,7 @@ public class WorkspaceService {
 
     private final WorkspaceMapper workspaceMapper;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Workspace getWorkspace(UUID id) {
@@ -65,7 +65,7 @@ public class WorkspaceService {
 
         workspaceProfileRepository.save(workspaceProfileEntity);
 
-        applicationEventPublisher.publishEvent(WorkspaceCreatedEvent.builder()
+        eventPublisher.publishEvent(WorkspaceCreatedEvent.builder()
                 .name(workspaceEntity.getName())
                 .workspaceId(workspaceEntity.getId())
                 .build());
@@ -85,13 +85,15 @@ public class WorkspaceService {
             updatedWorkspace.setName(workspace.getName());
         }
 
-        applicationEventPublisher.publishEvent(WorkspaceUpdated.builder()
+        Workspace saved = workspaceMapper
+            .toDomain(workspaceRepository.save(updatedWorkspace));
+
+        eventPublisher.publishEvent(WorkspaceUpdated.builder()
             .workspaceId(workspaceId)
-            .workspace(workspaceMapper.toDomain(updatedWorkspace))
+            .workspace(saved)
             .build());
 
-        return workspaceMapper
-            .toDomain(workspaceRepository.save(updatedWorkspace));
+        return saved;
     }
 
     @Transactional(readOnly = true)
@@ -126,7 +128,7 @@ public class WorkspaceService {
                 .workspace(workspaceEntity)
                 .build();
 
-        applicationEventPublisher.publishEvent(JoinedWorkspaceEvent.builder()
+        eventPublisher.publishEvent(JoinedWorkspaceEvent.builder()
                 .profileId(profileId)
                 .workspaceId(workspaceId)
                 .build());

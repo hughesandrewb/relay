@@ -1,8 +1,12 @@
 package com.andhug.relay.room.internal;
 
 import com.andhug.relay.room.api.Room;
+import com.andhug.relay.room.api.UpdateRoomCommand;
 import com.andhug.relay.room.api.dto.RoomDto;
-import com.andhug.relay.workspace.api.Workspace;
+import com.andhug.relay.room.api.dto.request.UpdateRoomRequest;
+
+import java.util.UUID;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -21,4 +25,7 @@ public interface RoomMapper {
 
     @Mapping(target = "participants", ignore = true)
     RoomEntity toEntity(Room domain);
+
+    @Mapping(target = "roomId", source = "roomId")
+    UpdateRoomCommand toCommand(UUID roomId, UpdateRoomRequest request);
 }

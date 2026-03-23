@@ -1,8 +1,10 @@
 import { profileApi } from '$lib/api/resources/profiles';
 import { workspaceApi } from '$lib/api/resources/workspaces';
-import type { Room } from '$lib/models';
+import { createRoom, type Room } from '$lib/models';
 import type { UUID } from 'crypto';
 import { SvelteMap } from 'svelte/reactivity';
+import { wsStore } from './websocket.svelte';
+import type { RoomDto } from '$lib/api/resources/rooms';
 
 class RoomStore {
 	roomsByWorkspaceId = new SvelteMap<UUID, Room[]>();
@@ -10,6 +12,14 @@ class RoomStore {
 	roomsById = new SvelteMap<UUID, Room>();
 
 	isLoading = $state(false);
+
+	constructor() {
+		wsStore.on('ROOM_UPDATE',(data: RoomDto) => {
+			const room: Room = createRoom(data);
+
+			this.updateRoom(room);
+		});
+	}
 
 	async getRooms(workspaceId: UUID) {
 		this.isLoading = true;
@@ -33,6 +43,17 @@ class RoomStore {
 		} finally {
 			this.isLoading = false;
 		}
+	}
+
+	updateRoom(room: Room) {
+		if (!this.roomsById.has(room.id)) {
+			return;
+		}
+		this.roomsById.set(room.id, room);
+
+		let currentRooms: Room[] = this.roomsByWorkspaceId.get(room.workspaceId) ?? [];
+		currentRooms = currentRooms.filter((currentRoom: Room) => room.id !== currentRoom.id);
+		this.roomsByWorkspaceId.set(room.workspaceId, [...currentRooms, room]);
 	}
 
 	private addRoom(room: Room) {

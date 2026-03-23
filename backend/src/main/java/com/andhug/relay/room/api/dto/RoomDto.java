@@ -1,11 +1,9 @@
 package com.andhug.relay.room.api.dto;
 
 import com.andhug.relay.profile.ProfileDto;
-import com.andhug.relay.room.api.RoomType;
 import lombok.Builder;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Builder

@@ -12,7 +12,9 @@ import com.andhug.relay.room.api.dto.request.CreateDirectMessageRequest;
 import com.andhug.relay.room.internal.RoomMapper;
 import com.andhug.relay.workspace.api.Workspace;
 import com.andhug.relay.workspace.api.WorkspaceService;
-import com.andhug.relay.workspace.api.dto.WorkspaceSummaryDto;
+import com.andhug.relay.workspace.api.dto.WorkspaceDto;
+import com.andhug.relay.workspace.internal.WorkspaceMapper;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -49,6 +51,8 @@ public class ProfileController {
     private final FriendshipMapper friendshipMapper;
 
     private final RoomMapper roomMapper;
+    
+    private final WorkspaceMapper workspaceMapper;
 
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get current profile's information", description = "Returns the current profile's information")
@@ -69,18 +73,14 @@ public class ProfileController {
             @ApiResponse(responseCode = "200", description = "List of current profile's workspaces"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public List<WorkspaceSummaryDto> getWorkspaces(
+    public List<WorkspaceDto> getWorkspaces(
             @AuthenticationPrincipal Profile profile
     ) {
 
         List<Workspace> workspaces = workspaceService.findAllByProfileId(profile.getId());
 
         return workspaces.stream()
-                .map(workspace -> WorkspaceSummaryDto.builder()
-                            .id(workspace.getId())
-                            .name(workspace.getName())
-                        .owner(workspace.getOwnerId().equals(profile.getId()))
-                            .build())
+                .map(workspace -> workspaceMapper.toDto(workspace))
                 .toList();
     }
 

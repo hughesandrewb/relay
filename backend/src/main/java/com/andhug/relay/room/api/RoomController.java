@@ -5,7 +5,10 @@ import com.andhug.relay.message.api.dto.CreateMessageRequest;
 import com.andhug.relay.message.api.dto.MessageDto;
 import com.andhug.relay.message.api.MessageService;
 import com.andhug.relay.profile.Profile;
-import com.andhug.relay.room.api.dto.response.GetDmsResponse;
+import com.andhug.relay.room.api.dto.RoomDto;
+import com.andhug.relay.room.api.dto.request.UpdateRoomRequest;
+import com.andhug.relay.room.internal.RoomMapper;
+
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +32,11 @@ import java.util.UUID;
 @Tag(name = "Room Controller", description = "APIs for managing rooms")
 public class RoomController {
 
+    private final RoomService roomService;
+
     private final MessageService messageService;
+
+    private final RoomMapper roomMapper;
 
     @GetMapping(value = "/{room-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getRoom(
@@ -43,6 +50,18 @@ public class RoomController {
             @Parameter(in = ParameterIn.PATH, required = true, name = "room-id", schema = @Schema(type = "string")) @PathVariable("room-id") UUID roomId) {
 
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @PatchMapping(value = "/{room-id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RoomDto> updateRoom(
+            @Parameter(in = ParameterIn.PATH, required = true, name = "room-id", schema = @Schema(type = "string")) @PathVariable("room-id") UUID roomId,
+            @RequestBody UpdateRoomRequest updateRequest) {
+
+        UpdateRoomCommand command = roomMapper.toCommand(roomId, updateRequest);
+
+        Room updatedRoom = roomService.updateRoom(command);
+
+        return ResponseEntity.ok(roomMapper.toDto(updatedRoom));
     }
 
     @GetMapping(value = "/{room-id}/messages", produces = MediaType.APPLICATION_JSON_VALUE)

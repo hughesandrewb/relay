@@ -10,6 +10,7 @@
 	import WorkspaceInvite from '$lib/components/workspace/WorkspaceInvite.svelte';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import WorkspaceForm from './workspace/WorkspaceForm.svelte';
+	import RoomForm from './room/RoomForm.svelte';
 
 	const currentWorkspaceId: UUID | undefined = $derived(page.params.workspaceId as UUID);
 	const currentRoomId: UUID | undefined = $derived(page.params.roomId as UUID);
@@ -99,7 +100,10 @@
 						</button>
 						<button
 							class="flex cursor-pointer flex-row gap-2 p-3"
-							onclick={() => console.log('Show create room')}
+							onclick={() => {
+								modalStore.openModal(RoomForm);
+								hideShowWorkspaceOptions();
+							}}
 						>
 							<BadgePlus />
 							<span>Create Room</span>
@@ -122,16 +126,28 @@
 			<div class="flex h-full flex-col gap-2 p-2">
 				{#each rooms as room (room.id)}
 					<div
-						class="flex flex-row items-center gap-2 rounded px-4 py-1 {currentRoomId === room.id &&
+						class="flex flex-row items-center gap-2 rounded px-1 py-1 {currentRoomId === room.id &&
 							'bg-black/10'}"
 					>
-						<span class="text-2xl font-medium" style="color: #{room.color ?? '000000'}">#</span>
-						<a
-							class="cursor-pointer text-xl transition-all duration-150 ease-in-out"
-							href="/rooms/{currentWorkspaceId}/{room.id}"
-						>
-							{room.name}
-						</a>
+						<div class="flex flex-row items-center gap-2 pl-3">
+							<span class="text-2xl font-medium" style="color: #{room.color ?? '000000'}">#</span>
+							<a
+								class="cursor-pointer text-xl transition-all duration-150 ease-in-out"
+								href="/rooms/{currentWorkspaceId}/{room.id}"
+							>
+								{room.name}
+							</a>
+						</div>
+						{#if currentWorkspace?.owner}
+							<button
+								class="ml-auto cursor-pointer rounded px-1 py-1 font-bold hover:bg-black/10"
+								onclick={() => {
+									modalStore.openModal(RoomForm, { existingRoom: room });
+								}}
+							>
+								<Settings class="size-5" />
+							</button>
+						{/if}
 					</div>
 				{/each}
 			</div>

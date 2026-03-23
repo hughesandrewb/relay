@@ -168,6 +168,22 @@ export interface paths {
         patch: operations["updateWorkspace"];
         trace?: never;
     };
+    "/api/rooms/{room-id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRoom"];
+        put?: never;
+        post?: never;
+        delete: operations["deleteRoom"];
+        options?: never;
+        head?: never;
+        patch: operations["updateRoom"];
+        trace?: never;
+    };
     "/api/workspaces/{workspace-id}/members": {
         parameters: {
             query?: never;
@@ -203,22 +219,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/rooms/{room-id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getRoom"];
-        put?: never;
-        post?: never;
-        delete: operations["deleteRoom"];
         options?: never;
         head?: never;
         patch?: never;
@@ -376,6 +376,9 @@ export interface components {
             createdAt?: string;
         };
         UpdateWorkspaceRequest: {
+            name?: string;
+        };
+        UpdateRoomRequest: {
             name?: string;
         };
         RealtimeTicketDto: {
@@ -737,6 +740,76 @@ export interface operations {
             };
         };
     };
+    getRoom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                "room-id": string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    deleteRoom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                "room-id": string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    updateRoom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                "room-id": string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRoomRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomDto"];
+                };
+            };
+        };
+    };
     getMembers: {
         parameters: {
             query?: {
@@ -798,50 +871,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InviteDto"];
-                };
-            };
-        };
-    };
-    getRoom: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                "room-id": string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-        };
-    };
-    deleteRoom: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                "room-id": string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
                 };
             };
         };

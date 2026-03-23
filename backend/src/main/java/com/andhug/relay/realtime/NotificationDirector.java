@@ -6,6 +6,8 @@ import com.andhug.relay.realtime.registry.Connection;
 import com.andhug.relay.realtime.registry.ConnectionRegistry;
 import com.andhug.relay.room.api.Room;
 import com.andhug.relay.room.api.RoomService;
+import com.andhug.relay.room.api.events.UpdateRoom;
+import com.andhug.relay.room.internal.RoomMapper;
 import com.andhug.relay.workspace.api.Workspace;
 import com.andhug.relay.workspace.api.WorkspaceService;
 import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
@@ -31,6 +33,8 @@ public class NotificationDirector {
     private final WorkspaceService workspaceService;
 
     private final WorkspaceMapper workspaceMapper;
+
+    private final RoomMapper roomMapper;
 
     private final ConnectionRegistry connectionRegistry;
 
@@ -62,6 +66,20 @@ public class NotificationDirector {
             .opcode(GatewayOpcode.DISPATCH)
             .type(GatewayEvent.WORKSPACE_UPDATE)
             .data(workspaceMapper.toDto(event.workspace()))
+            .build();
+
+        broadcast(toNotify, message);
+    }
+
+    @ApplicationModuleListener
+    void onRoomUpdate(UpdateRoom event) {
+
+        Set<UUID> toNotify = roomToProfiles.get(event.roomId());
+
+        var message = RealtimeMessagePayload.builder()
+            .opcode(GatewayOpcode.DISPATCH)
+            .type(GatewayEvent.ROOM_UPDATE)
+            .data(roomMapper.toDto(event.room()))
             .build();
 
         broadcast(toNotify, message);
