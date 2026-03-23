@@ -9,6 +9,9 @@ import com.andhug.relay.room.api.RoomService;
 import com.andhug.relay.workspace.api.Workspace;
 import com.andhug.relay.workspace.api.WorkspaceService;
 import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
+import com.andhug.relay.workspace.api.events.WorkspaceUpdated;
+import com.andhug.relay.workspace.internal.WorkspaceMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.modulith.events.ApplicationModuleListener;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -25,6 +29,8 @@ public class NotificationDirector {
     private final RoomService roomService;
 
     private final WorkspaceService workspaceService;
+
+    private final WorkspaceMapper workspaceMapper;
 
     private final ConnectionRegistry connectionRegistry;
 
@@ -39,6 +45,35 @@ public class NotificationDirector {
                 .opcode(GatewayOpcode.DISPATCH)
                 .type(GatewayEvent.MESSAGE_CREATE)
                 .data(event.message())
+                .build();
+
+        for (UUID profileId : toNotify) {
+            Connection connection = connectionRegistry.getConnection(profileId);
+
+            if (connection == null || !connection.isActive()) {
+                log.warn("Connection {} is not open", profileId);
+                continue;
+            }
+
+            connection.sendMessage(message);
+        }
+    }
+
+    @ApplicationModuleListener
+    void onWorkspaceUpdate(WorkspaceUpdated event) {
+
+        log.info("Workspace {} updated, notifying members", event.workspaceId());
+
+        // this will get all the members of the workspace, even if they are offline
+        // rethink this after implementing presence better
+        Set<UUID> toNotify = workspaceService.getMemberIds(event.workspaceId())
+                .stream()
+                .collect(Collectors.toSet());
+
+        var message = RealtimeMessagePayload.builder()
+                .opcode(GatewayOpcode.DISPATCH)
+                .type(GatewayEvent.WORKSPACE_UPDATE)
+                .data(workspaceMapper.toDto(event.workspace()))
                 .build();
 
         for (UUID profileId : toNotify) {

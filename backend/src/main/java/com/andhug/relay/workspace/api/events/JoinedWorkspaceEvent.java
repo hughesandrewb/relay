@@ -6,6 +6,6 @@ import java.util.UUID;
 
 @Builder
 public record JoinedWorkspaceEvent(
-        UUID profileId,
-        UUID workspaceId
+    UUID profileId,
+    UUID workspaceId
 ) {}

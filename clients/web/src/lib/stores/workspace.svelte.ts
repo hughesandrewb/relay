@@ -1,11 +1,21 @@
 import { profileApi } from '$lib/api/resources/profiles';
-import type { Workspace } from '$lib/models';
+import { createWorkspace, type Workspace } from '$lib/models';
 import { SvelteMap } from 'svelte/reactivity';
+import { wsStore } from './websocket.svelte';
+import type { WorkspaceDto } from '$lib/api/resources/workspaces';
 
 class WorkspaceStore {
 	workspacesById = new SvelteMap<string, Workspace>();
 	workspaces: Workspace[] = $derived(Array.from(this.workspacesById.values()));
 	isLoading = $state(false);
+
+	constructor() {
+		wsStore.on('WORKSPACE_UPDATE', (data: WorkspaceDto) => {
+			const workspace: Workspace = createWorkspace(data);
+
+			this.updateWorkspace(workspace);
+		});
+	}
 
 	async getWorkspaces() {
 		this.isLoading = true;

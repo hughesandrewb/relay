@@ -4,6 +4,7 @@ import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
 import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
 import com.andhug.relay.workspace.api.events.WorkspaceCreatedEvent;
+import com.andhug.relay.workspace.api.events.WorkspaceUpdated;
 import com.andhug.relay.workspace.internal.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,8 +85,13 @@ public class WorkspaceService {
             updatedWorkspace.setName(workspace.getName());
         }
 
+        applicationEventPublisher.publishEvent(WorkspaceUpdated.builder()
+            .workspaceId(workspaceId)
+            .workspace(workspaceMapper.toDomain(updatedWorkspace))
+            .build());
+
         return workspaceMapper
-                .toDomain(workspaceRepository.save(updatedWorkspace));
+            .toDomain(workspaceRepository.save(updatedWorkspace));
     }
 
     @Transactional(readOnly = true)
@@ -127,4 +133,14 @@ public class WorkspaceService {
 
         workspaceProfileRepository.save(workspaceProfileEntity);
     }
+
+    @Transactional(readOnly = true)
+    public List<UUID> getMemberIds(UUID workspaceId) {
+
+        return workspaceProfileRepository.findByWorkspace_Id(workspaceId)
+                .stream()
+                .map(wp -> wp.getProfile().getId())
+                .toList();
+    }
+
 }

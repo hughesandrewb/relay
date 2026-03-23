@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum GatewayEvent {
-    MESSAGE_CREATE("MESSAGE_CREATE");
+    MESSAGE_CREATE("MESSAGE_CREATE"),
+    WORKSPACE_UPDATE("WORKSPACE_UPDATE");
 
     private String eventName;
 

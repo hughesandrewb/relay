@@ -8,6 +8,6 @@ import java.util.UUID;
 @DomainEvent
 @Builder
 public record WorkspaceCreatedEvent(
-        UUID workspaceId,
-        String name
+    UUID workspaceId,
+    String name
 ) {}
