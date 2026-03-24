@@ -1,4 +1,4 @@
-package com.andhug.relay.room.api.dto;
+package com.andhug.relay.room.infrastructure.web.dto;
 
 import com.andhug.relay.profile.ProfileDto;
 import lombok.Builder;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.andhug.relay.shared.domain.exception.DomainException;
 import com.andhug.relay.shared.domain.exception.NotFoundException;
 import com.andhug.relay.shared.domain.exception.UnauthorizedException;
-import com.andhug.relay.shared.dto.ErrorResponse;
+import com.andhug.relay.shared.infrastructure.web.dto.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 

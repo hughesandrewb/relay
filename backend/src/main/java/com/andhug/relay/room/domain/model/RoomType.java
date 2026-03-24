@@ -1,4 +1,4 @@
-package com.andhug.relay.room.api;
+package com.andhug.relay.room.domain.model;
 
 public enum RoomType {
     WORKSPACE_TEXT,

@@ -5,7 +5,6 @@ import com.andhug.relay.workspace.infrastructure.persistence.WorkspaceEntity;
 import com.andhug.relay.workspace.infrastructure.web.dto.WorkspaceDto;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface WorkspaceMapper {
@@ -16,7 +15,5 @@ public interface WorkspaceMapper {
 
     WorkspaceDto toDto(Workspace domain);
 
-    @Mapping(target = "members", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
     WorkspaceEntity toEntity(Workspace domain);
 }

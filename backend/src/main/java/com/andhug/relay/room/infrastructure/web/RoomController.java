@@ -1,13 +1,16 @@
-package com.andhug.relay.room.api;
+package com.andhug.relay.room.infrastructure.web;
 
 import com.andhug.relay.message.api.dto.CreateMessageHttpRequest;
 import com.andhug.relay.message.api.dto.CreateMessageRequest;
 import com.andhug.relay.message.api.dto.MessageDto;
 import com.andhug.relay.message.api.MessageService;
 import com.andhug.relay.profile.Profile;
-import com.andhug.relay.room.api.dto.RoomDto;
-import com.andhug.relay.room.api.dto.request.UpdateRoomRequest;
-import com.andhug.relay.room.internal.RoomMapper;
+import com.andhug.relay.room.application.RoomApplicationService;
+import com.andhug.relay.room.application.command.UpdateRoomCommand;
+import com.andhug.relay.room.application.mapper.RoomMapper;
+import com.andhug.relay.room.domain.model.Room;
+import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
+import com.andhug.relay.room.infrastructure.web.dto.request.UpdateRoomRequest;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -22,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -32,7 +36,7 @@ import java.util.UUID;
 @Tag(name = "Room Controller", description = "APIs for managing rooms")
 public class RoomController {
 
-    private final RoomService roomService;
+    private final RoomApplicationService roomApplicationService;
 
     private final MessageService messageService;
 
@@ -57,9 +61,12 @@ public class RoomController {
             @Parameter(in = ParameterIn.PATH, required = true, name = "room-id", schema = @Schema(type = "string")) @PathVariable("room-id") UUID roomId,
             @RequestBody UpdateRoomRequest updateRequest) {
 
-        UpdateRoomCommand command = roomMapper.toCommand(roomId, updateRequest);
+        var command = UpdateRoomCommand.builder()
+            .roomId(roomId)
+            .name(Optional.ofNullable(updateRequest.name()))
+            .build();
 
-        Room updatedRoom = roomService.updateRoom(command);
+        Room updatedRoom = roomApplicationService.updateRoom(command);
 
         return ResponseEntity.ok(roomMapper.toDto(updatedRoom));
     }

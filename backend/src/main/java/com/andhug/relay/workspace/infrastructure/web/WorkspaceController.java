@@ -5,9 +5,9 @@ import com.andhug.relay.invite.api.InviteService;
 import com.andhug.relay.invite.api.dto.InviteDto;
 import com.andhug.relay.profile.Profile;
 import com.andhug.relay.profile.ProfileDto;
-import com.andhug.relay.room.api.Room;
-import com.andhug.relay.room.api.dto.RoomDto;
-import com.andhug.relay.room.api.RoomService;
+import com.andhug.relay.room.domain.model.Room;
+import com.andhug.relay.room.domain.service.RoomDomainService;
+import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
 import com.andhug.relay.workspace.application.WorkspaceApplicationService;
 import com.andhug.relay.workspace.application.command.CreateWorkspaceCommand;
 import com.andhug.relay.workspace.application.command.UpdateWorkspaceCommand;
@@ -48,7 +48,7 @@ public class WorkspaceController {
 
     private final WorkspaceApplicationService workspaceApplicationService;
 
-    private final RoomService roomService;
+    private final RoomDomainService roomService;
 
     private final WorkspaceMapper workspaceMapper;
 

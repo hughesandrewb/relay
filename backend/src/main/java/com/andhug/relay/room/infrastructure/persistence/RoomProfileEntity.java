@@ -1,4 +1,4 @@
-package com.andhug.relay.room.internal;
+package com.andhug.relay.room.infrastructure.persistence;
 
 import com.andhug.relay.profile.internal.ProfileEntity;
 import jakarta.persistence.*;

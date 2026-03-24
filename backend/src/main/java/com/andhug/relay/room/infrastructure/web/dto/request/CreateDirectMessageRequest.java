@@ -1,4 +1,4 @@
-package com.andhug.relay.room.api.dto.request;
+package com.andhug.relay.room.infrastructure.web.dto.request;
 
 import java.util.UUID;
 

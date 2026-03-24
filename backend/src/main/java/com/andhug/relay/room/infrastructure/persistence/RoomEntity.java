@@ -1,12 +1,13 @@
-package com.andhug.relay.room.internal;
+package com.andhug.relay.room.infrastructure.persistence;
 
-import com.andhug.relay.room.api.RoomType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import com.andhug.relay.room.domain.model.RoomType;
 
 @Entity
 @Table(name = "room")

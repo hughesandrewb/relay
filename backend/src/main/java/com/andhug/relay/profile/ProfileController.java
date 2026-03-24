@@ -4,12 +4,12 @@ import com.andhug.relay.friend.api.FriendService;
 import com.andhug.relay.friend.api.dto.FriendSummaryDto;
 import com.andhug.relay.friend.api.models.Friendship;
 import com.andhug.relay.friend.internal.FriendshipMapper;
-import com.andhug.relay.room.api.Room;
-import com.andhug.relay.room.api.dto.RoomDto;
-import com.andhug.relay.room.api.RoomService;
+import com.andhug.relay.room.application.mapper.RoomMapper;
+import com.andhug.relay.room.domain.model.Room;
+import com.andhug.relay.room.domain.service.RoomDomainService;
+import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
+import com.andhug.relay.room.infrastructure.web.dto.request.CreateDirectMessageRequest;
 import com.andhug.relay.profile.internal.ProfileMapper;
-import com.andhug.relay.room.api.dto.request.CreateDirectMessageRequest;
-import com.andhug.relay.room.internal.RoomMapper;
 import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
 import com.andhug.relay.workspace.domain.model.Workspace;
 import com.andhug.relay.workspace.domain.service.WorkspaceDomainService;
@@ -42,7 +42,7 @@ public class ProfileController {
 
     private final WorkspaceDomainService workspaceService;
 
-    private final RoomService roomService;
+    private final RoomDomainService roomService;
 
     private final FriendService friendService;
 

@@ -1,4 +1,4 @@
-package com.andhug.relay.room.internal;
+package com.andhug.relay.room.infrastructure.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -4,10 +4,10 @@ import com.andhug.relay.message.api.events.MessageCreated;
 import com.andhug.relay.realtime.dto.RealtimeMessagePayload;
 import com.andhug.relay.realtime.registry.Connection;
 import com.andhug.relay.realtime.registry.ConnectionRegistry;
-import com.andhug.relay.room.api.Room;
-import com.andhug.relay.room.api.RoomService;
-import com.andhug.relay.room.api.events.UpdateRoom;
-import com.andhug.relay.room.internal.RoomMapper;
+import com.andhug.relay.room.application.mapper.RoomMapper;
+import com.andhug.relay.room.domain.event.RoomUpdatedEvent;
+import com.andhug.relay.room.domain.model.Room;
+import com.andhug.relay.room.domain.service.RoomDomainService;
 import com.andhug.relay.workspace.application.WorkspaceApplicationService;
 import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
 import com.andhug.relay.workspace.domain.event.JoinedWorkspaceEvent;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationDirector {
 
-    private final RoomService roomService;
+    private final RoomDomainService roomService;
 
     private final WorkspaceDomainService workspaceService;
 
@@ -77,14 +77,17 @@ public class NotificationDirector {
     }
 
     @ApplicationModuleListener
-    void onRoomUpdate(UpdateRoom event) {
+    void onRoomUpdate(RoomUpdatedEvent event) {
 
         Set<UUID> toNotify = roomToProfiles.get(event.roomId());
+
+        // TODO: get from room application service
+        Room room = null; // roomService.getRoomById(event.roomId());
 
         var message = RealtimeMessagePayload.builder()
             .opcode(GatewayOpcode.DISPATCH)
             .type(GatewayEvent.ROOM_UPDATE)
-            .data(roomMapper.toDto(event.room()))
+            .data(roomMapper.toDto(room))
             .build();
 
         broadcast(toNotify, message);
