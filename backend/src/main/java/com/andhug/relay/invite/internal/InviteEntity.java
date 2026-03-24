@@ -1,7 +1,8 @@
 package com.andhug.relay.invite.internal;
 
 import com.andhug.relay.profile.internal.ProfileEntity;
-import com.andhug.relay.workspace.internal.WorkspaceEntity;
+import com.andhug.relay.workspace.infrastructure.persistence.WorkspaceEntity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

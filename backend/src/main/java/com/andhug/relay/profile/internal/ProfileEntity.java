@@ -1,7 +1,8 @@
 package com.andhug.relay.profile.internal;
 
 import com.andhug.relay.room.internal.RoomProfileEntity;
-import com.andhug.relay.workspace.internal.WorkspaceProfileEntity;
+import com.andhug.relay.workspace.infrastructure.persistence.WorkspaceProfileEntity;
+
 import jakarta.persistence.*;
 import lombok.*;
 

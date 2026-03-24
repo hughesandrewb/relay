@@ -8,11 +8,12 @@ import com.andhug.relay.room.api.Room;
 import com.andhug.relay.room.api.RoomService;
 import com.andhug.relay.room.api.events.UpdateRoom;
 import com.andhug.relay.room.internal.RoomMapper;
-import com.andhug.relay.workspace.api.Workspace;
-import com.andhug.relay.workspace.api.WorkspaceService;
-import com.andhug.relay.workspace.api.events.JoinedWorkspaceEvent;
-import com.andhug.relay.workspace.api.events.WorkspaceUpdated;
-import com.andhug.relay.workspace.internal.WorkspaceMapper;
+import com.andhug.relay.workspace.application.WorkspaceApplicationService;
+import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
+import com.andhug.relay.workspace.domain.event.JoinedWorkspaceEvent;
+import com.andhug.relay.workspace.domain.event.WorkspaceUpdatedEvent;
+import com.andhug.relay.workspace.domain.model.Workspace;
+import com.andhug.relay.workspace.domain.service.WorkspaceDomainService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,9 @@ public class NotificationDirector {
 
     private final RoomService roomService;
 
-    private final WorkspaceService workspaceService;
+    private final WorkspaceDomainService workspaceService;
+
+    private final WorkspaceApplicationService workspaceApplicationService;
 
     private final WorkspaceMapper workspaceMapper;
 
@@ -54,7 +57,7 @@ public class NotificationDirector {
         broadcast(toNotify, message);}
 
     @ApplicationModuleListener
-    void onWorkspaceUpdate(WorkspaceUpdated event) {
+    void onWorkspaceUpdate(WorkspaceUpdatedEvent event) {
 
         // this will get all the members of the workspace, even if they are offline
         // rethink this after implementing presence better
@@ -62,10 +65,12 @@ public class NotificationDirector {
             .stream()
             .collect(Collectors.toSet());
 
+        Workspace workspace = workspaceApplicationService.getWorkspace(event.workspaceId());
+
         var message = RealtimeMessagePayload.builder()
             .opcode(GatewayOpcode.DISPATCH)
             .type(GatewayEvent.WORKSPACE_UPDATE)
-            .data(workspaceMapper.toDto(event.workspace()))
+            .data(workspaceMapper.toDto(workspace))
             .build();
 
         broadcast(toNotify, message);

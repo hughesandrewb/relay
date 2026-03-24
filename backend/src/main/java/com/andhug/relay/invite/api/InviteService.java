@@ -6,9 +6,10 @@ import com.andhug.relay.invite.internal.InviteRepository;
 import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
 import com.andhug.relay.utils.RandomUtils;
-import com.andhug.relay.workspace.api.WorkspaceService;
-import com.andhug.relay.workspace.internal.WorkspaceEntity;
-import com.andhug.relay.workspace.internal.WorkspaceRepository;
+import com.andhug.relay.workspace.domain.service.WorkspaceDomainService;
+import com.andhug.relay.workspace.infrastructure.persistence.WorkspaceEntity;
+import com.andhug.relay.workspace.infrastructure.persistence.WorkspaceJpaRepository;
+
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +30,11 @@ public class InviteService {
 
     private final ProfileRepository profileRepository;
 
-    private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceJpaRepository workspaceRepository;
 
     private final InviteMapper inviteMapper;
 
-    private final WorkspaceService workspaceService;
+    private final WorkspaceDomainService workspaceService;
 
     @Transactional
     public Invite getInvite(UUID workspaceId, UUID profileId) {

@@ -9,16 +9,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @EnableJpaAuditing
 @OpenAPIDefinition(
-		info = @Info(
-				title = "Relay API",
-				version = "1.0",
-				description = "API documentation for Relay"
-		)
+    info = @Info(
+        title = "Relay API",
+        version = "1.0",
+        description = "API documentation for Relay"
+    )
 )
 public class RelayApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(RelayApplication.class, args);
-	}
-
+    
+    public static void main(String[] args) {
+        SpringApplication.run(RelayApplication.class, args);
+    }
+    
 }

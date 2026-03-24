@@ -10,10 +10,10 @@ import com.andhug.relay.room.api.RoomService;
 import com.andhug.relay.profile.internal.ProfileMapper;
 import com.andhug.relay.room.api.dto.request.CreateDirectMessageRequest;
 import com.andhug.relay.room.internal.RoomMapper;
-import com.andhug.relay.workspace.api.Workspace;
-import com.andhug.relay.workspace.api.WorkspaceService;
-import com.andhug.relay.workspace.api.dto.WorkspaceDto;
-import com.andhug.relay.workspace.internal.WorkspaceMapper;
+import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
+import com.andhug.relay.workspace.domain.model.Workspace;
+import com.andhug.relay.workspace.domain.service.WorkspaceDomainService;
+import com.andhug.relay.workspace.infrastructure.web.dto.WorkspaceDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +40,7 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    private final WorkspaceService workspaceService;
+    private final WorkspaceDomainService workspaceService;
 
     private final RoomService roomService;
 

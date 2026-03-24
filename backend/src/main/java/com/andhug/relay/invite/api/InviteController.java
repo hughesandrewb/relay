@@ -4,9 +4,11 @@ import com.andhug.relay.invite.api.dto.InviteDto;
 import com.andhug.relay.profile.Profile;
 import com.andhug.relay.profile.ProfileService;
 import com.andhug.relay.profile.internal.ProfileMapper;
-import com.andhug.relay.workspace.api.Workspace;
-import com.andhug.relay.workspace.api.WorkspaceService;
-import com.andhug.relay.workspace.internal.WorkspaceMapper;
+import com.andhug.relay.workspace.application.WorkspaceApplicationService;
+import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
+import com.andhug.relay.workspace.domain.model.Workspace;
+import com.andhug.relay.workspace.domain.service.WorkspaceDomainService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -31,7 +33,7 @@ public class InviteController {
 
     private final InviteService inviteService;
 
-    private final WorkspaceService workspaceService;
+    private final WorkspaceApplicationService workspaceApplicationService;
 
     private final ProfileService profileService;
 
@@ -53,7 +55,7 @@ public class InviteController {
 
         Profile sender = profileService.getProfile(invite.getSenderId());
 
-        Workspace workspace = workspaceService.findById(invite.getWorkspaceId());
+        Workspace workspace = workspaceApplicationService.getWorkspace(invite.getWorkspaceId());
 
         return ResponseEntity.ok(InviteDto.builder()
                 .workspace(workspaceMapper.toDto(workspace))

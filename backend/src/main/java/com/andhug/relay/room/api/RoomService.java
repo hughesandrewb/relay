@@ -6,7 +6,8 @@ import com.andhug.relay.profile.internal.ProfileEntity;
 import com.andhug.relay.profile.internal.ProfileRepository;
 import com.andhug.relay.room.api.events.UpdateRoom;
 import com.andhug.relay.room.internal.*;
-import com.andhug.relay.workspace.api.events.WorkspaceCreatedEvent;
+import com.andhug.relay.workspace.domain.event.WorkspaceCreatedEvent;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

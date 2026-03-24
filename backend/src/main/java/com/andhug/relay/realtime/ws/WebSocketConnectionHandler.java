@@ -25,7 +25,7 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
     
     private final NotificationDirector notificationDirector;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -35,7 +35,7 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
         connectionRegistry.registerConnection(new WebSocketConnection(session), profileId);
         notificationDirector.subscribeToRooms(profileId);
 
-        applicationEventPublisher.publishEvent(RealtimeConnectionOpenedEvent.builder()
+        eventPublisher.publishEvent(RealtimeConnectionOpenedEvent.builder()
                 .profileId(profileId)
                 .openedAt(Instant.now())
                 .build());
@@ -63,7 +63,7 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
         UUID profileId = getProfileId(session);
 
-        applicationEventPublisher.publishEvent(RealtimeConnectionClosedEvent.builder()
+        eventPublisher.publishEvent(RealtimeConnectionClosedEvent.builder()
                 .profileId(profileId)
                 .closedAt(Instant.now())
                 .build());
