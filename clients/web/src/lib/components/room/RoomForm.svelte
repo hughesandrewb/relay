@@ -1,11 +1,13 @@
 
 <script lang="ts">
-	import { roomApi, type UpdateRoomRequest } from '$lib/api/resources/rooms';
+	import { page } from '$app/state';
+	import { roomApi, type CreateRoomRequest, type UpdateRoomRequest } from '$lib/api/resources/rooms';
 	import type { Room } from '$lib/models';
 	import { modalStore } from '$lib/stores/modal.svelte';
 	import { profileStore } from '$lib/stores/profile.svelte';
 	import { roomStore } from '$lib/stores/room.svelte';
 	import { BadgePlus, Settings } from '@lucide/svelte';
+	import { type UUID } from 'crypto';
 
 	type Props = {
 		existingRoom: Room | undefined;
@@ -17,6 +19,8 @@
 
 	let { existingRoom }: Props = $props();
 
+	const currentWorkspaceId: string | undefined = $derived(page.params.workspaceId);
+
 	let isEditing: boolean = $derived(!!existingRoom);
 
 	let room: RoomForm = $state({
@@ -24,14 +28,14 @@
 	});
 
 	async function createRoom() {
-		// const createRoomRequest: CreateRoomRequest = {
-		// 	name: room.name
-		// };
+		const createRoomRequest: CreateRoomRequest = {
+			name: room.name
+		};
 
-		// const createdRoom = await roomApi.createRoom(createRoomRequest);
+		const createdRoom = await roomApi.createRoom(currentWorkspaceId! as UUID, createRoomRequest);
 
-		// roomStore.addRoom(createdRoom);
-		// modalStore.closeModal();
+		roomStore.addRoom(createdRoom);
+		modalStore.closeModal();
 	}
 
 	async function updateRoom() {

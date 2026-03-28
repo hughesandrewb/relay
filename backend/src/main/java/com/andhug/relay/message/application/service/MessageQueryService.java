@@ -36,7 +36,6 @@ public class MessageQueryService {
         List<ProfileId> authorIds = messages
             .stream()
             .map(Message::getAuthorId)
-            .map(ProfileId::of)
             .toList();
 
         List<ProfileDto> authors = profileQueryService
@@ -49,12 +48,14 @@ public class MessageQueryService {
         }
 
         return messages.stream()
-            .map(message -> new MessageDto(
-                message.getId().value(),
-                authorMap.get(ProfileId.of(message.getAuthorId())),
-                message.getRoomId(),
-                message.getContent()
-            ))
+            .map(message -> {
+                return MessageDto.builder()
+                    .id(message.getId().value())
+                    .author(authorMap.get(message.getAuthorId()))
+                    .content(message.getContent())
+                    .roomId(message.getRoomId().value())
+                    .build();
+            })
             .toList();
     }
 

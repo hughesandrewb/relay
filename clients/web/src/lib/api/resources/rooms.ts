@@ -5,7 +5,7 @@ import { handleResponse } from '$lib/api/utils/errors';
 import { createMessage, createRoom, type Message, type Room } from '$lib/models';
 
 export type RoomDto = components['schemas']['RoomDto'];
-// export type CreateRoomRequest = components['schemas']['CreateRoomRequest'];
+export type CreateRoomRequest = components['schemas']['CreateRoomRequest'];
 export type UpdateRoomRequest = components['schemas']['UpdateRoomRequest'];
 
 export const roomApi = {
@@ -48,5 +48,19 @@ export const roomApi = {
 		);
 
 		return createMessage(dto);
+	},
+	createRoom: async (workspaceId: UUID, room: CreateRoomRequest): Promise<Room> => {
+		const dto: RoomDto = await handleResponse(
+			client.POST('/api/workspaces/{workspace-id}/rooms', {
+				params: {
+					path: {
+						'workspace-id': workspaceId
+					}
+				},
+				body: room
+			})
+		);
+
+		return createRoom(dto);
 	}
 };

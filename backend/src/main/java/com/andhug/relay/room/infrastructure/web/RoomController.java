@@ -9,11 +9,11 @@ import com.andhug.relay.message.infrastructure.web.dto.CreateMessageHttpRequest;
 import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
 import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.room.application.command.UpdateRoomCommand;
-import com.andhug.relay.room.application.mapper.RoomMapper;
 import com.andhug.relay.room.application.service.RoomCommandService;
-import com.andhug.relay.room.domain.model.Room;
+import com.andhug.relay.room.application.service.RoomQueryService;
 import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
 import com.andhug.relay.room.infrastructure.web.dto.request.UpdateRoomRequest;
+import com.andhug.relay.shared.domain.model.RoomId;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -41,11 +41,11 @@ public class RoomController {
 
     private final RoomCommandService roomCommandService;
 
+    private final RoomQueryService roomQueryService;
+
     private final CreateMessageHandler createMessageHandler;
 
     private final MessageQueryService messageQueryService;
-
-    private final RoomMapper roomMapper;
 
     @GetMapping(value = "/{room-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getRoom(
@@ -67,13 +67,15 @@ public class RoomController {
             @RequestBody UpdateRoomRequest updateRequest) {
 
         var command = UpdateRoomCommand.builder()
-            .roomId(roomId)
+            .roomId(RoomId.of(roomId))
             .name(Optional.ofNullable(updateRequest.name()))
             .build();
 
-        Room updatedRoom = roomCommandService.updateRoom(command);
+        RoomId updatedRoomId = roomCommandService.updateRoom(command);
 
-        return ResponseEntity.ok(roomMapper.toDto(updatedRoom));
+        RoomDto updatedRoom = roomQueryService.getRoom(updatedRoomId);
+
+        return ResponseEntity.ok(updatedRoom);
     }
 
     @GetMapping(value = "/{room-id}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -96,8 +98,8 @@ public class RoomController {
             @RequestBody CreateMessageHttpRequest request) {
 
         var createMessageCommand = CreateMessageCommand.builder()
-            .authorId(profile.getId().value())
-            .roomId(roomId)
+            .authorId(profile.getId())
+            .roomId(RoomId.of(roomId))
             .content(request.content())
             .build();
 

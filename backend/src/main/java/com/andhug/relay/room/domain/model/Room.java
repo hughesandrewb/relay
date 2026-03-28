@@ -1,5 +1,6 @@
 package com.andhug.relay.room.domain.model;
 
+import com.andhug.relay.room.domain.event.RoomUpdatedEvent;
 import com.andhug.relay.room.domain.exception.InvalidRoomNameException;
 import com.andhug.relay.shared.domain.model.AggregateRoot;
 import com.andhug.relay.shared.domain.model.RoomId;
@@ -33,6 +34,8 @@ public class Room extends AggregateRoot {
         if (newName == null || newName.isBlank()) {
             throw new InvalidRoomNameException();
         }
+
+        registerEvent(new RoomUpdatedEvent(id));
 
         this.name = newName;
     }

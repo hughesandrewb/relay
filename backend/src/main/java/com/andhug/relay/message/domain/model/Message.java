@@ -3,10 +3,10 @@ package com.andhug.relay.message.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.UUID;
-
 import com.andhug.relay.message.domain.events.MessageCreatedEvent;
 import com.andhug.relay.shared.domain.model.AggregateRoot;
+import com.andhug.relay.shared.domain.model.ProfileId;
+import com.andhug.relay.shared.domain.model.RoomId;
 
 @Getter
 @AllArgsConstructor
@@ -14,13 +14,13 @@ public class Message extends AggregateRoot {
 
     private final MessageId id;
 
-    private final UUID authorId;
+    private final ProfileId authorId;
 
-    private final UUID roomId;
+    private final RoomId roomId;
 
     private String content;
 
-    public static Message create(MessageId id, UUID authorId, UUID roomId, String content) {
+    public static Message create(MessageId id, ProfileId authorId, RoomId roomId, String content) {
         if (authorId == null) {
             throw new IllegalArgumentException("authorId cannot be null");
         }

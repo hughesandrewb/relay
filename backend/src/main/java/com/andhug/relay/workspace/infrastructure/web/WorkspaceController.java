@@ -7,9 +7,14 @@ import com.andhug.relay.invite.domain.model.InviteId;
 import com.andhug.relay.invite.infrastructure.web.dto.InviteDto;
 import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.profile.infrastructure.web.dto.ProfileDto;
+import com.andhug.relay.room.application.command.CreateRoomCommand;
+import com.andhug.relay.room.application.service.RoomCommandService;
+import com.andhug.relay.room.application.service.RoomQueryService;
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.domain.service.RoomDomainService;
 import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
+import com.andhug.relay.room.infrastructure.web.dto.request.CreateRoomRequest;
+import com.andhug.relay.shared.domain.model.RoomId;
 import com.andhug.relay.shared.domain.model.WorkspaceId;
 import com.andhug.relay.workspace.application.command.CreateWorkspaceCommand;
 import com.andhug.relay.workspace.application.command.UpdateWorkspaceCommand;
@@ -52,6 +57,10 @@ import java.util.UUID;
 public class WorkspaceController {
 
     private final WorkspaceCommandService workspaceApplicationService;
+
+    private final RoomCommandService roomCommandService;
+
+    private final RoomQueryService roomQueryService;
 
     private final CreateWorkspaceHandler createWorkspaceHandler;
 
@@ -166,10 +175,18 @@ public class WorkspaceController {
     })
     public ResponseEntity<RoomDto> createRoom(
         @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
-        @PathVariable("workspace-id") UUID workspaceId
+        @PathVariable("workspace-id") UUID workspaceId,
+        @RequestBody CreateRoomRequest request
     ) {
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        var createRoomCommand = new CreateRoomCommand(WorkspaceId.of(workspaceId), request.name());
+
+        RoomId roomId = roomCommandService.createRoom(createRoomCommand);
+
+        RoomDto room = roomQueryService.getRoom(roomId);
+
+        return ResponseEntity
+            .ok(room);
     }
 
     @GetMapping(value = "/{workspace-id}/members", produces =   MediaType.APPLICATION_JSON_VALUE)

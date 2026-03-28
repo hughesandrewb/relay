@@ -60,12 +60,12 @@ public class NotificationDirector {
 
         log.info("Message created event received for message {}", event.getMessageId());
 
-        Set<UUID> toNotify = roomToProfiles.get(event.getRoomId());
+        Set<UUID> toNotify = roomToProfiles.get(event.getRoomId().value());
 
         var data = MessageDto.builder()
             .id(event.getMessageId().value())
-            .author(profileMapper.toDto(profileService.getProfile(ProfileId.of(event.getAuthorId()))))
-            .roomId(event.getRoomId())
+            .author(profileMapper.toDto(profileService.getProfile(event.getAuthorId())))
+            .roomId(event.getRoomId().value())
             .content(event.getContent())
             .build();
 
@@ -101,7 +101,7 @@ public class NotificationDirector {
     @ApplicationModuleListener
     void onRoomUpdate(RoomUpdatedEvent event) {
 
-        Set<UUID> toNotify = roomToProfiles.get(event.roomId().value());
+        Set<UUID> toNotify = roomToProfiles.get(event.getRoomId().value());
 
         // TODO: get from room application service
         Room room = null; // roomService.getRoomById(event.roomId());

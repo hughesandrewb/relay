@@ -1,10 +1,9 @@
 package com.andhug.relay.room.domain.repository;
 
-import java.util.UUID;
-
 import com.andhug.relay.room.domain.model.Room;
+import com.andhug.relay.shared.domain.model.RoomId;
 
 public interface RoomRepository {
-    Room findById(UUID roomId);
-    Room save(Room room);
+    Room findById(RoomId roomId);
+    void save(Room room);
 }

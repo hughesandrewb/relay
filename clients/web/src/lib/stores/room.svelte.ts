@@ -56,7 +56,7 @@ class RoomStore {
 		this.roomsByWorkspaceId.set(room.workspaceId, [...currentRooms, room]);
 	}
 
-	private addRoom(room: Room) {
+	addRoom(room: Room) {
 		this.roomsById.set(room.id, room);
 
 		const currentRooms: Room[] = this.roomsByWorkspaceId.get(room.workspaceId) ?? [];

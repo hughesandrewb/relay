@@ -1,12 +1,13 @@
 package com.andhug.relay.message.application.command;
 
-import java.util.UUID;
+import com.andhug.relay.shared.domain.model.ProfileId;
+import com.andhug.relay.shared.domain.model.RoomId;
 
 import lombok.Builder;
 
 @Builder
 public record CreateMessageCommand(
-    UUID authorId,
-    UUID roomId,
+    ProfileId authorId,
+    RoomId roomId,
     String content
 ) {}

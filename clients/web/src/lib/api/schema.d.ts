@@ -316,25 +316,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Friendship: {
-            id?: components["schemas"]["FriendshipId"];
-            requesterId?: components["schemas"]["ProfileId"];
-            addresseeId?: components["schemas"]["ProfileId"];
-            /** @enum {string} */
-            status?: "PENDING" | "ACCEPTED" | "REJECTED";
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        FriendshipId: {
-            /** Format: uuid */
-            value?: string;
-        };
-        ProfileId: {
-            /** Format: uuid */
-            value?: string;
-        };
         CreateWorkspaceRequest: {
             name: string;
         };
@@ -344,6 +325,9 @@ export interface components {
             name?: string;
             /** Format: uuid */
             ownerId?: string;
+        };
+        CreateRoomRequest: {
+            name?: string;
         };
         RoomDto: {
             /** Format: uuid */
@@ -431,9 +415,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": components["schemas"]["Friendship"];
-                };
+                content?: never;
             };
         };
     };
@@ -501,7 +483,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRoomRequest"];
+            };
+        };
         responses: {
             /** @description Room created successfully */
             201: {
