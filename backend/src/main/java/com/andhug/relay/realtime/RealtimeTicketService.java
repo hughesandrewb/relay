@@ -1,6 +1,6 @@
 package com.andhug.relay.realtime;
 
-import com.andhug.relay.profile.Profile;
+import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.utils.Constants;
 import com.andhug.relay.utils.RandomUtils;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,13 @@ public class RealtimeTicketService {
             return Optional.empty();
         }
 
-        UUID profileId = UUID.fromString(profileIdString);
+        UUID profileId = null;
+
+        try {
+            profileId = UUID.fromString(profileIdString);
+        } catch (IllegalArgumentException e) {
+            log.error(String.format("Could not parse profileId: %s", profileIdString));
+        }
 
         return Optional.of(profileId);
     }

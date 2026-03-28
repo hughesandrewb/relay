@@ -1,13 +1,16 @@
 package com.andhug.relay.room.infrastructure.web;
 
-import com.andhug.relay.message.api.dto.CreateMessageHttpRequest;
-import com.andhug.relay.message.api.dto.CreateMessageRequest;
-import com.andhug.relay.message.api.dto.MessageDto;
-import com.andhug.relay.message.api.MessageService;
-import com.andhug.relay.profile.Profile;
-import com.andhug.relay.room.application.RoomApplicationService;
+import com.andhug.relay.message.application.command.CreateMessageCommand;
+import com.andhug.relay.message.application.handler.CreateMessageHandler;
+import com.andhug.relay.message.application.query.GetMessagesQuery;
+import com.andhug.relay.message.application.service.MessageQueryService;
+import com.andhug.relay.message.domain.model.MessageId;
+import com.andhug.relay.message.infrastructure.web.dto.CreateMessageHttpRequest;
+import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
+import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.room.application.command.UpdateRoomCommand;
 import com.andhug.relay.room.application.mapper.RoomMapper;
+import com.andhug.relay.room.application.service.RoomCommandService;
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
 import com.andhug.relay.room.infrastructure.web.dto.request.UpdateRoomRequest;
@@ -36,9 +39,11 @@ import java.util.UUID;
 @Tag(name = "Room Controller", description = "APIs for managing rooms")
 public class RoomController {
 
-    private final RoomApplicationService roomApplicationService;
+    private final RoomCommandService roomCommandService;
 
-    private final MessageService messageService;
+    private final CreateMessageHandler createMessageHandler;
+
+    private final MessageQueryService messageQueryService;
 
     private final RoomMapper roomMapper;
 
@@ -66,7 +71,7 @@ public class RoomController {
             .name(Optional.ofNullable(updateRequest.name()))
             .build();
 
-        Room updatedRoom = roomApplicationService.updateRoom(command);
+        Room updatedRoom = roomCommandService.updateRoom(command);
 
         return ResponseEntity.ok(roomMapper.toDto(updatedRoom));
     }
@@ -77,17 +82,28 @@ public class RoomController {
             @RequestParam(required = false, defaultValue = "50") int limit,
             @RequestParam(required = false, defaultValue = "0") int offset) {
 
-        return ResponseEntity.ok(messageService.getMessages(roomId, offset, limit));
+        var query = GetMessagesQuery.latest(roomId, limit);
+
+        List<MessageDto> messages = messageQueryService.getMessages(query);
+
+        return ResponseEntity.ok(messages);
     }
 
     @PostMapping(value = "/{room-id}/messages", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MessageDto> createMessage(
             @AuthenticationPrincipal Profile profile,
             @Parameter(in = ParameterIn.PATH, required = true, name = "room-id", schema = @Schema(type = "string")) @PathVariable("room-id") UUID roomId,
-            @RequestBody CreateMessageHttpRequest httpRequest) {
+            @RequestBody CreateMessageHttpRequest request) {
 
-        var serviceRequest = new CreateMessageRequest(UUID.randomUUID(), roomId, httpRequest.content());
+        var createMessageCommand = CreateMessageCommand.builder()
+            .authorId(profile.getId().value())
+            .roomId(roomId)
+            .content(request.content())
+            .build();
 
-        return ResponseEntity.ok(messageService.createMessage(serviceRequest, profile));
+        MessageId messageId = createMessageHandler.handle(createMessageCommand);
+
+        return ResponseEntity
+            .ok(messageQueryService.getMessage(messageId));
     }
 }

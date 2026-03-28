@@ -3,23 +3,14 @@ package com.andhug.relay.room.application.mapper;
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.infrastructure.persistence.RoomEntity;
 import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
+import com.andhug.relay.shared.application.mapper.ValueObjectMapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { ValueObjectMapper.class })
 public interface RoomMapper {
-    
     Room toDomain(RoomDto dto);
-
-    @Mapping(target = "participants", ignore = true)
     Room toDomain(RoomEntity dto);
-
     RoomDto toDto(Room domain);
-
-    @Mapping(target = "participants", ignore = true)
-    RoomEntity toEntity(RoomDto dto);
-
-    @Mapping(target = "participants", ignore = true)
     RoomEntity toEntity(Room domain);
 }

@@ -1,10 +1,10 @@
 package com.andhug.relay.room.domain.event;
 
-import java.util.UUID;
-
 import org.jmolecules.event.annotation.DomainEvent;
+
+import com.andhug.relay.shared.domain.model.RoomId;
 
 @DomainEvent
 public record RoomUpdatedEvent(
-    UUID roomId
+    RoomId roomId
 ) {}

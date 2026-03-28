@@ -1,7 +1,11 @@
 package com.andhug.relay.workspace.domain.model;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
 
+import com.andhug.relay.shared.domain.model.AggregateRoot;
+import com.andhug.relay.shared.domain.model.ProfileId;
+import com.andhug.relay.shared.domain.model.WorkspaceId;
+import com.andhug.relay.workspace.domain.event.WorkspaceCreatedEvent;
 import com.andhug.relay.workspace.domain.exception.InvalidWorkspaceNameException;
 import com.andhug.relay.workspace.domain.exception.InvalidWorkspaceOwnerException;
 
@@ -14,13 +18,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Workspace {
+public class Workspace extends AggregateRoot {
 
-    private UUID id;
+    private WorkspaceId id;
 
     private String name;
 
-    private UUID ownerId;
+    private ProfileId ownerId;
+
+    private LocalDateTime createdAt;
+
+    public static Workspace create(String name, ProfileId ownerId) {
+        Workspace created = Workspace.builder()
+            .id(WorkspaceId.generate())
+            .name(name)
+            .ownerId(ownerId)
+            .build();
+
+        created.registerEvent(new WorkspaceCreatedEvent(created.id));
+
+        return created;
+    }
 
     public void rename(String newName) {
         if (newName == null || newName.isBlank()) {
@@ -29,14 +47,14 @@ public class Workspace {
         this.name = newName;
     }
 
-    public void changeOwner(UUID newOwnerId) {
+    public void changeOwner(ProfileId newOwnerId) {
         if (newOwnerId == null) {
             throw new InvalidWorkspaceOwnerException();
         }
         this.ownerId = newOwnerId;
     }
 
-    public boolean isOwnedBy(UUID userId) {
+    public boolean isOwnedBy(ProfileId userId) {
         if (userId == null) {
             throw new InvalidWorkspaceOwnerException();
         }

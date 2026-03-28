@@ -34,6 +34,6 @@ public class ConnectionRegistry {
 
     public boolean isConnected(String id) {
 
-        return this.registry.get(id).isActive();
+        return this.registry.get(UUID.fromString(id)).isActive();
     }
 }

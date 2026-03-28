@@ -16,15 +16,13 @@ export const inviteApi = {
 
 		return createInvite(dto);
 	},
-	acceptInvite: async (inviteCode: string): Promise<Invite> => {
-		const dto: InviteDto = await handleResponse(
+	acceptInvite: async (inviteCode: string): Promise<void> => {
+		await handleResponse(
 			client.POST('/api/invites/{invite-code}', {
 				params: {
 					path: { 'invite-code': inviteCode }
 				}
 			})
 		);
-
-		return createInvite(dto);
 	}
 };

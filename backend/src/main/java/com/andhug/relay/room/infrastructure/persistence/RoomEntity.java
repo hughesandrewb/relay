@@ -3,33 +3,22 @@ package com.andhug.relay.room.infrastructure.persistence;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import com.andhug.relay.room.domain.model.RoomType;
 
 @Entity
-@Table(name = "room")
-@Getter
-@Setter
+@DiscriminatorValue("WORKSPACE_ROOM")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class RoomEntity {
+@Getter
+@Setter
+public class RoomEntity extends AbstractRoomEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    private RoomType type;
+    private UUID workspaceId;
 
     @Column(length = 100)
     private String name;
 
-    private UUID workspaceId;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<RoomProfileEntity> participants = new HashSet<>();
+    private RoomType type;
 }

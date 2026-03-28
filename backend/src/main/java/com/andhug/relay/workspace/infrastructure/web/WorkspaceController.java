@@ -1,17 +1,22 @@
 package com.andhug.relay.workspace.infrastructure.web;
 
-import com.andhug.relay.invite.api.Invite;
-import com.andhug.relay.invite.api.InviteService;
-import com.andhug.relay.invite.api.dto.InviteDto;
-import com.andhug.relay.profile.Profile;
-import com.andhug.relay.profile.ProfileDto;
+import com.andhug.relay.invite.application.command.CreateInviteIfNotExistsCommand;
+import com.andhug.relay.invite.application.handler.CreateInviteIfNotExistsHandler;
+import com.andhug.relay.invite.application.service.InviteQueryService;
+import com.andhug.relay.invite.domain.model.InviteId;
+import com.andhug.relay.invite.infrastructure.web.dto.InviteDto;
+import com.andhug.relay.profile.domain.model.Profile;
+import com.andhug.relay.profile.infrastructure.web.dto.ProfileDto;
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.domain.service.RoomDomainService;
 import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
-import com.andhug.relay.workspace.application.WorkspaceApplicationService;
+import com.andhug.relay.shared.domain.model.WorkspaceId;
 import com.andhug.relay.workspace.application.command.CreateWorkspaceCommand;
 import com.andhug.relay.workspace.application.command.UpdateWorkspaceCommand;
+import com.andhug.relay.workspace.application.handler.CreateWorkspaceHandler;
 import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
+import com.andhug.relay.workspace.application.service.WorkspaceCommandService;
+import com.andhug.relay.workspace.application.service.WorkspaceQueryService;
 import com.andhug.relay.workspace.domain.model.Workspace;
 import com.andhug.relay.workspace.infrastructure.web.dto.WorkspaceDto;
 import com.andhug.relay.workspace.infrastructure.web.dto.request.CreateWorkspaceRequest;
@@ -46,13 +51,19 @@ import java.util.UUID;
 @Tag(name = "Workspace Management", description = "APIs for managing workspaces")
 public class WorkspaceController {
 
-    private final WorkspaceApplicationService workspaceApplicationService;
+    private final WorkspaceCommandService workspaceApplicationService;
+
+    private final CreateWorkspaceHandler createWorkspaceHandler;
+
+    private final WorkspaceQueryService workspaceQueryService;
 
     private final RoomDomainService roomService;
 
     private final WorkspaceMapper workspaceMapper;
 
-    private final InviteService inviteService;
+    private final InviteQueryService inviteQueryService;
+
+    private final CreateInviteIfNotExistsHandler createInviteIfNotExistsHandler;
 
     @GetMapping(value = "/{workspace-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get workspace by ID", description = "Retrieves a specific workspace by its unique identifier")
@@ -65,11 +76,11 @@ public class WorkspaceController {
         @PathVariable("workspace-id") UUID workspaceId
     ) {
 
-        Workspace workspace = workspaceApplicationService
-            .getWorkspace(workspaceId);
+        WorkspaceDto workspace = workspaceQueryService
+            .getWorkspace(WorkspaceId.of(workspaceId));
 
         return ResponseEntity
-            .ok(workspaceMapper.toDto(workspace));
+            .ok(workspace);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -87,12 +98,13 @@ public class WorkspaceController {
             .ownerId(profile.getId())
             .build();
 
-        Workspace workspace = workspaceApplicationService
-            .createWorkspace(createWorkspaceCommand);
+        WorkspaceId workspaceId = createWorkspaceHandler.handle(createWorkspaceCommand);
+
+        WorkspaceDto workspace = workspaceQueryService.getWorkspace(workspaceId);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(workspaceMapper.toDto(workspace));
+            .body(workspace);
     }
 
     @PatchMapping(value = "/{workspace-id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -110,7 +122,7 @@ public class WorkspaceController {
     ) {
 
         var command = UpdateWorkspaceCommand.builder()
-            .workspaceId(workspaceId)
+            .workspaceId(WorkspaceId.of(workspaceId))
             .requesterId(profile.getId())
             .name(Optional.ofNullable(request.name()))
             .ownerId(Optional.empty())
@@ -139,9 +151,9 @@ public class WorkspaceController {
 
         return ResponseEntity.ok(rooms.stream().map(room -> {
             return RoomDto.builder()
-                .id(room.getId())
+                .id(room.getId().value())
                 .name(room.getName())
-                .workspaceId(room.getWorkspaceId())
+                .workspaceId(room.getWorkspaceId().value())
                 .build();
         }).toList());
     }
@@ -192,12 +204,16 @@ public class WorkspaceController {
         @PathVariable("workspace-id") UUID workspaceId
     ) {
 
-        Invite invite = inviteService.getInvite(workspaceId, profile.getId());
+        var createInviteIfNotExistsCommand = CreateInviteIfNotExistsCommand.builder()
+            .workspaceId(WorkspaceId.of(workspaceId))
+            .senderId(profile.getId())
+            .build();
 
-        return ResponseEntity.ok(InviteDto.builder()
-            .code(invite.getCode())
-            .expiresAt(invite.getExpiresAt())
-            .createdAt(invite.getCreatedAt())
-            .build());
+        InviteId inviteId = createInviteIfNotExistsHandler.handle(createInviteIfNotExistsCommand);
+
+        InviteDto invite = inviteQueryService.getInvite(inviteId);
+
+        return ResponseEntity
+            .ok(invite);
     }
 }

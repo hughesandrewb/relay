@@ -1,14 +1,16 @@
 package com.andhug.relay.workspace.application.command;
 
 import java.util.Optional;
-import java.util.UUID;
+
+import com.andhug.relay.shared.domain.model.ProfileId;
+import com.andhug.relay.shared.domain.model.WorkspaceId;
 
 import lombok.Builder;
 
 @Builder
 public record UpdateWorkspaceCommand(
-    UUID workspaceId,
-    UUID requesterId,
+    WorkspaceId workspaceId,
+    ProfileId requesterId,
     Optional<String> name,
-    Optional<UUID> ownerId
+    Optional<ProfileId> ownerId
 ) {}

@@ -29,7 +29,7 @@
 		}
 
 		await inviteApi.acceptInvite(inviteCode);
-		goto(`/rooms/${inviteCode}`);
+		goto(`/rooms/${invite?.workspace?.id}`);
 	}
 </script>
 

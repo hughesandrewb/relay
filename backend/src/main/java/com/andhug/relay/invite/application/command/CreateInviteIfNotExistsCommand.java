@@ -1,0 +1,12 @@
+package com.andhug.relay.invite.application.command;
+
+import com.andhug.relay.shared.domain.model.ProfileId;
+import com.andhug.relay.shared.domain.model.WorkspaceId;
+
+import lombok.Builder;
+
+@Builder
+public record CreateInviteIfNotExistsCommand(
+    ProfileId senderId,
+    WorkspaceId workspaceId
+) {}

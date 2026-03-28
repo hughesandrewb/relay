@@ -5,23 +5,19 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSocket
+@RequiredArgsConstructor
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
-    WebSocketConnectionHandler webSocketConnectionHandler;
+    private final WebSocketConnectionHandler webSocketConnectionHandler;
 
-    AuthHandshakeInterceptor authHandshakeInterceptor;
-
-    public WebSocketConfiguration(WebSocketConnectionHandler webSocketConnectionHandler, AuthHandshakeInterceptor authHandshakeInterceptor) {
-
-        this.webSocketConnectionHandler = webSocketConnectionHandler;
-        this.authHandshakeInterceptor = authHandshakeInterceptor;
-    }
+    private final AuthHandshakeInterceptor authHandshakeInterceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-
         registry
                 .addHandler(this.webSocketConnectionHandler, "/ws")
                 .addInterceptors(this.authHandshakeInterceptor)

@@ -1,6 +1,5 @@
 package com.andhug.relay.realtime.ws;
 
-import com.andhug.relay.realtime.MessagePayload;
 import com.andhug.relay.realtime.NotificationDirector;
 import com.andhug.relay.realtime.events.RealtimeConnectionClosedEvent;
 import com.andhug.relay.realtime.events.RealtimeConnectionOpenedEvent;
@@ -11,7 +10,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -22,7 +20,7 @@ import java.util.UUID;
 public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
     private final ConnectionRegistry connectionRegistry;
-    
+
     private final NotificationDirector notificationDirector;
 
     private final ApplicationEventPublisher eventPublisher;
@@ -44,11 +42,11 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
 
-        String m = (String) message.getPayload();
+        // String m = (String) message.getPayload();
 
-        MessagePayload messagePayload = new ObjectMapper().readValue(m, MessagePayload.class);
+        // MessagePayload messagePayload = new ObjectMapper().readValue(m, MessagePayload.class);
 
-        UUID profileId = getProfileId(session);
+        // UUID profileId = getProfileId(session);
     }
 
     @Override

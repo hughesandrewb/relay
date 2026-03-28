@@ -1,6 +1,5 @@
 package com.andhug.relay.config;
 
-import com.andhug.relay.profile.Profile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -8,6 +7,8 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.andhug.relay.profile.domain.model.Profile;
 
 @Configuration
 public class RedisConfig {

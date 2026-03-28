@@ -1,6 +1,6 @@
 package com.andhug.relay.realtime;
 
-import com.andhug.relay.profile.Profile;
+import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.realtime.dto.RealtimeTicketDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

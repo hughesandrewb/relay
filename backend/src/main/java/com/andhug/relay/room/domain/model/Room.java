@@ -1,29 +1,33 @@
 package com.andhug.relay.room.domain.model;
 
-import com.andhug.relay.profile.Profile;
 import com.andhug.relay.room.domain.exception.InvalidRoomNameException;
-import com.andhug.relay.room.domain.exception.InvalidRoomParticipantException;
+import com.andhug.relay.shared.domain.model.AggregateRoot;
+import com.andhug.relay.shared.domain.model.RoomId;
+import com.andhug.relay.shared.domain.model.WorkspaceId;
 
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 @Getter
 @Builder
-public class Room {
+public class Room extends AggregateRoot {
 
-    private UUID id;
+    private RoomId id;
 
     private String name;
 
-    private UUID workspaceId;
+    private WorkspaceId workspaceId;
 
     private RoomType type;
 
-    private List<Profile> participants;
+    public static Room create(String name, WorkspaceId workspaceId, RoomType type) {
+        return Room.builder()
+            .id(RoomId.generate())
+            .name(name)
+            .workspaceId(workspaceId)
+            .type(type)
+            .build();
+    }
 
     public void rename(String newName) {
         if (newName == null || newName.isBlank()) {
@@ -31,19 +35,5 @@ public class Room {
         }
 
         this.name = newName;
-    }
-
-    public void addParticipant(Profile profile) {
-        if (profile == null) {
-            throw new InvalidRoomParticipantException();
-        }
-
-        if (participants == null) {
-            participants = new ArrayList<>();
-        }
-
-        if (!participants.contains(profile)) {
-            participants.add(profile);
-        }
     }
 }

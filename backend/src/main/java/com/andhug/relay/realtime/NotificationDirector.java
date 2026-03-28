@@ -1,6 +1,9 @@
 package com.andhug.relay.realtime;
 
-import com.andhug.relay.message.api.events.MessageCreated;
+import com.andhug.relay.message.domain.events.MessageCreatedEvent;
+import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
+import com.andhug.relay.profile.application.mapper.ProfileMapper;
+import com.andhug.relay.profile.application.service.ProfileService;
 import com.andhug.relay.realtime.dto.RealtimeMessagePayload;
 import com.andhug.relay.realtime.registry.Connection;
 import com.andhug.relay.realtime.registry.ConnectionRegistry;
@@ -8,12 +11,15 @@ import com.andhug.relay.room.application.mapper.RoomMapper;
 import com.andhug.relay.room.domain.event.RoomUpdatedEvent;
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.domain.service.RoomDomainService;
-import com.andhug.relay.workspace.application.WorkspaceApplicationService;
+import com.andhug.relay.shared.domain.model.ProfileId;
+import com.andhug.relay.shared.domain.model.WorkspaceId;
 import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
 import com.andhug.relay.workspace.domain.event.JoinedWorkspaceEvent;
 import com.andhug.relay.workspace.domain.event.WorkspaceUpdatedEvent;
 import com.andhug.relay.workspace.domain.model.Workspace;
+import com.andhug.relay.workspace.domain.repository.WorkspaceRepository;
 import com.andhug.relay.workspace.domain.service.WorkspaceDomainService;
+import com.andhug.relay.workspacemembership.application.service.WorkspaceMemberQueryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,39 +39,55 @@ public class NotificationDirector {
 
     private final WorkspaceDomainService workspaceService;
 
-    private final WorkspaceApplicationService workspaceApplicationService;
+    private final WorkspaceRepository workspaceRepository;
+
+    private final WorkspaceMemberQueryService workspaceMemberQueryService;
+
+    private final ProfileService profileService;
 
     private final WorkspaceMapper workspaceMapper;
 
     private final RoomMapper roomMapper;
+
+    private final ProfileMapper profileMapper;
 
     private final ConnectionRegistry connectionRegistry;
 
     private final Map<UUID, Set<UUID>> roomToProfiles = new ConcurrentHashMap<>(); // roomId -> profileId[]
 
     @ApplicationModuleListener
-    void onMessageCreated(MessageCreated event) {
+    void onMessageCreated(MessageCreatedEvent event) {
 
-        Set<UUID> toNotify = roomToProfiles.get(event.roomId());
+        log.info("Message created event received for message {}", event.getMessageId());
+
+        Set<UUID> toNotify = roomToProfiles.get(event.getRoomId());
+
+        var data = MessageDto.builder()
+            .id(event.getMessageId().value())
+            .author(profileMapper.toDto(profileService.getProfile(ProfileId.of(event.getAuthorId()))))
+            .roomId(event.getRoomId())
+            .content(event.getContent())
+            .build();
 
         var message = RealtimeMessagePayload.builder()
             .opcode(GatewayOpcode.DISPATCH)
             .type(GatewayEvent.MESSAGE_CREATE)
-            .data(event.message())
+            .data(data)
             .build();
 
-        broadcast(toNotify, message);}
+        broadcast(toNotify, message);
+    }
 
     @ApplicationModuleListener
     void onWorkspaceUpdate(WorkspaceUpdatedEvent event) {
 
         // this will get all the members of the workspace, even if they are offline
         // rethink this after implementing presence better
-        Set<UUID> toNotify = workspaceService.getMemberIds(event.workspaceId())
+        Set<UUID> toNotify = workspaceService.getMemberIds(event.workspaceId().value())
             .stream()
             .collect(Collectors.toSet());
 
-        Workspace workspace = workspaceApplicationService.getWorkspace(event.workspaceId());
+        Workspace workspace = workspaceRepository.findById(event.workspaceId());
 
         var message = RealtimeMessagePayload.builder()
             .opcode(GatewayOpcode.DISPATCH)
@@ -79,7 +101,7 @@ public class NotificationDirector {
     @ApplicationModuleListener
     void onRoomUpdate(RoomUpdatedEvent event) {
 
-        Set<UUID> toNotify = roomToProfiles.get(event.roomId());
+        Set<UUID> toNotify = roomToProfiles.get(event.roomId().value());
 
         // TODO: get from room application service
         Room room = null; // roomService.getRoomById(event.roomId());
@@ -93,7 +115,7 @@ public class NotificationDirector {
         broadcast(toNotify, message);
     }
 
-    private void broadcast(Set<UUID> recipients, RealtimeMessagePayload message) {
+    private void broadcast(Set<UUID> recipients, RealtimeMessagePayload<Object> message) {
         for (UUID profileId : recipients) {
             Connection connection = connectionRegistry.getConnection(profileId);
 
@@ -113,28 +135,28 @@ public class NotificationDirector {
 
     public void subscribeToRooms(UUID profileId) {
 
-        List<Workspace> workspaces = workspaceService.findAllByProfileId(profileId);
+        Set<WorkspaceId> workspaces = workspaceMemberQueryService.getWorkspaceIdsOfProfile(ProfileId.of(profileId));
 
-        for (Workspace workspace : workspaces) {
-            List<Room> rooms = roomService.getRoomsByWorkspaceId(workspace.getId());
+        for (WorkspaceId workspaceId : workspaces) {
+            List<Room> rooms = roomService.getRoomsByWorkspaceId(workspaceId.value());
 
-            log.info("Subscribing to {} rooms for workspace {}", rooms.size(), workspace.getId());
+            log.info("Subscribing to {} rooms for workspace {}", rooms.size(), workspaceId);
 
             for (Room room : rooms) {
                 roomToProfiles
-                    .computeIfAbsent(room.getId(), k -> new HashSet<>())
+                    .computeIfAbsent(room.getId().value(), k -> new HashSet<>())
                     .add(profileId);
             }
         }
 
-        List<Room> directMessages =  roomService.getDirectMessages(profileId);
-        for (Room room : directMessages) {
+        // List<Room> directMessages =  roomService.getDirectMessages(profileId);
+        // for (Room room : directMessages) {
 
-            log.info("Subscribing to direct message {}", room.getId());
+        //     log.info("Subscribing to direct message {}", room.getId());
 
-            roomToProfiles
-                .computeIfAbsent(room.getId(), k -> new HashSet<>())
-                .add(profileId);
-        }
+        //     roomToProfiles
+        //         .computeIfAbsent(room.getId().value(), k -> new HashSet<>())
+        //         .add(profileId);
+        // }
     }
 }

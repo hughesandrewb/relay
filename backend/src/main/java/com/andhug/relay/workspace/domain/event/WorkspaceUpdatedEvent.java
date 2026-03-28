@@ -1,13 +1,13 @@
 package com.andhug.relay.workspace.domain.event;
 
-import java.util.UUID;
-
 import org.jmolecules.event.annotation.DomainEvent;
+
+import com.andhug.relay.shared.domain.model.WorkspaceId;
 
 import lombok.Builder;
 
 @DomainEvent
 @Builder
 public record WorkspaceUpdatedEvent(
-    UUID workspaceId
+    WorkspaceId workspaceId
 ) {}

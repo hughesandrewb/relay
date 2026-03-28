@@ -1,11 +1,11 @@
 package com.andhug.relay.workspace.application.command;
 
-import java.util.UUID;
+import com.andhug.relay.shared.domain.model.ProfileId;
 
 import lombok.Builder;
 
 @Builder
 public record CreateWorkspaceCommand(
-    UUID ownerId,
+    ProfileId ownerId,
     String name
 ) {}

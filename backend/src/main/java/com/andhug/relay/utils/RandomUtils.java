@@ -54,6 +54,6 @@ public class RandomUtils {
         int green = Math.round((g + m) * 255);
         int blue = Math.round((b + m) * 255);
 
-        return String.format("#%02X%02X%02X", red, green, blue);
+        return String.format("%02X%02X%02X", red, green, blue);
     }
 }

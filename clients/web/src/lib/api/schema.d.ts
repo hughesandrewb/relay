@@ -89,7 +89,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["requestFriend"];
+        post: operations["sendFriendRequest"];
         delete?: never;
         options?: never;
         head?: never;
@@ -317,12 +317,23 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Friendship: {
-            /** Format: uuid */
-            requesterId?: string;
-            /** Format: uuid */
-            addresseeId?: string;
+            id?: components["schemas"]["FriendshipId"];
+            requesterId?: components["schemas"]["ProfileId"];
+            addresseeId?: components["schemas"]["ProfileId"];
             /** @enum {string} */
             status?: "PENDING" | "ACCEPTED" | "REJECTED";
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        FriendshipId: {
+            /** Format: uuid */
+            value?: string;
+        };
+        ProfileId: {
+            /** Format: uuid */
+            value?: string;
         };
         CreateWorkspaceRequest: {
             name: string;
@@ -334,13 +345,6 @@ export interface components {
             /** Format: uuid */
             ownerId?: string;
         };
-        ProfileDto: {
-            /** Format: uuid */
-            id?: string;
-            username?: string;
-            displayName?: string;
-            accentColor?: string;
-        };
         RoomDto: {
             /** Format: uuid */
             id?: string;
@@ -349,7 +353,6 @@ export interface components {
             workspaceId?: string;
             /** Format: int32 */
             type?: number;
-            participants?: components["schemas"]["ProfileDto"][];
         };
         CreateMessageHttpRequest: {
             content?: string;
@@ -362,9 +365,22 @@ export interface components {
             roomId?: string;
             content?: string;
         };
+        ProfileDto: {
+            /** Format: uuid */
+            id?: string;
+            username?: string;
+            displayName?: string;
+            accentColor?: string;
+        };
         CreateDirectMessageRequest: {
             /** Format: uuid */
             recipientId?: string;
+        };
+        UpdateWorkspaceRequest: {
+            name?: string;
+        };
+        UpdateRoomRequest: {
+            name?: string;
         };
         InviteDto: {
             code?: string;
@@ -375,26 +391,20 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
         };
-        UpdateWorkspaceRequest: {
-            name?: string;
-        };
-        UpdateRoomRequest: {
-            name?: string;
-        };
         RealtimeTicketDto: {
             code?: string;
         };
-        FriendSummaryDto: {
+        FriendDto: {
             /** Format: uuid */
             id?: string;
             username?: string;
+            displayName?: string;
             accentColor?: string;
         };
-        WorkspaceSummaryDto: {
+        DirectMessageDto: {
             /** Format: uuid */
             id?: string;
-            name?: string;
-            owner?: boolean;
+            participants?: components["schemas"]["ProfileDto"][];
         };
     };
     responses: never;
@@ -564,7 +574,7 @@ export interface operations {
             };
         };
     };
-    requestFriend: {
+    sendFriendRequest: {
         parameters: {
             query?: never;
             header?: never;
@@ -580,9 +590,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": components["schemas"]["Friendship"];
-                };
+                content?: never;
             };
         };
     };
@@ -601,7 +609,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RoomDto"][];
+                    "application/json": components["schemas"]["DirectMessageDto"][];
                 };
             };
         };
@@ -677,9 +685,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": components["schemas"]["InviteDto"];
-                };
+                content?: never;
             };
         };
     };
@@ -731,6 +737,24 @@ export interface operations {
         responses: {
             /** @description Workspace updated successfully */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceDto"];
+                };
+            };
+            /** @description Unauthorized to update workspace */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceDto"];
+                };
+            };
+            /** @description Workspace not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -912,7 +936,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FriendSummaryDto"][];
+                    "application/json": components["schemas"]["FriendDto"][];
                 };
             };
         };
@@ -961,7 +985,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkspaceSummaryDto"][];
+                    "application/json": components["schemas"]["WorkspaceDto"][];
                 };
             };
             /** @description Unauthorized */
@@ -970,7 +994,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkspaceSummaryDto"][];
+                    "application/json": components["schemas"]["WorkspaceDto"][];
                 };
             };
         };
@@ -990,7 +1014,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["FriendSummaryDto"][];
+                    "*/*": components["schemas"]["FriendDto"][];
                 };
             };
         };

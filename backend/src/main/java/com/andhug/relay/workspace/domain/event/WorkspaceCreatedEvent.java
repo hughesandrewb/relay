@@ -1,12 +1,19 @@
 package com.andhug.relay.workspace.domain.event;
 
-import lombok.Builder;
-import org.jmolecules.event.annotation.DomainEvent;
+import com.andhug.relay.shared.domain.event.DomainEvent;
+import com.andhug.relay.shared.domain.model.WorkspaceId;
 
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@DomainEvent
-@Builder
-public record WorkspaceCreatedEvent(
-    UUID workspaceId
-) {}
+@Getter
+@org.jmolecules.event.annotation.DomainEvent
+@AllArgsConstructor
+public class WorkspaceCreatedEvent extends DomainEvent {
+
+    private WorkspaceId workspaceId;
+
+    public static WorkspaceCreatedEvent of(WorkspaceId workspaceId) {
+        return new WorkspaceCreatedEvent(workspaceId);
+    }
+}

@@ -1,7 +1,12 @@
 package com.andhug.relay.auth;
 
-import com.andhug.relay.profile.Profile;
-import com.andhug.relay.profile.ProfileService;
+import com.andhug.relay.profile.application.command.CreateProfileCommand;
+import com.andhug.relay.profile.application.service.ProfileCommandService;
+import com.andhug.relay.profile.application.service.ProfileService;
+import com.andhug.relay.profile.domain.exception.ProfileNotFoundException;
+import com.andhug.relay.profile.domain.model.Profile;
+import com.andhug.relay.shared.domain.model.ProfileId;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,11 +22,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtProfileFilter extends OncePerRequestFilter {
+
+    private final ProfileCommandService profileCommandService;
 
     private final ProfileService profileService;
 
@@ -32,9 +41,9 @@ public class JwtProfileFilter extends OncePerRequestFilter {
 
         if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken
             && !(authentication.getPrincipal() instanceof Profile)) {
-
             Jwt jwt = jwtAuthenticationToken.getToken();
-            Profile profile = profileService.getOrCreateProfile(jwt);
+
+            Profile profile = getOrCreateProfile(jwt);
 
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(profile, jwt, authentication.getAuthorities());
 
@@ -42,5 +51,26 @@ public class JwtProfileFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private Profile getOrCreateProfile(Jwt jwt) {
+        Profile profile;
+
+        var profileId = ProfileId.of(UUID.fromString(jwt.getSubject()));
+
+        try {
+            profile = profileService.getProfile(profileId);
+        } catch (ProfileNotFoundException e) {
+            var createProfileCommand = CreateProfileCommand.builder()
+                .userId(profileId)
+                .username(jwt.getClaim("preferred_username"))
+                .displayName(Optional.empty())
+                .accentColor(Optional.empty())
+                .build();
+
+            profile = profileCommandService.createProfile(createProfileCommand);
+        }
+
+        return profile;
     }
 }
