@@ -9,12 +9,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { ValueObjectMapper.class })
 public interface WorkspaceMapper {
-
-    Workspace toDomain(WorkspaceDto dto);
-
     Workspace toDomain(WorkspaceEntity dto);
-
     WorkspaceDto toDto(Workspace domain);
-
     WorkspaceEntity toEntity(Workspace domain);
 }
