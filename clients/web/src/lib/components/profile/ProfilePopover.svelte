@@ -4,7 +4,7 @@
 
 <div class="absolute bottom-4 left-4 rounded border bg-white p-2 min-w-60">
 	{#if !profileStore.isLoading && profileStore.currentProfile}
-		<div class="flex flex-row items-center gap-4">
+		<div class="flex flex-row items-end gap-4">
 			<div class="relative">
 				<div
 					class="size-20 rounded-full"
@@ -16,9 +16,9 @@
 					<div class="size-4.5 rounded-full bg-green-500"></div>
 				</div>
 			</div>
-			<div>
-				<div class="text-lg font-medium">{profileStore.currentProfile.displayName}</div>
-				<div>@{profileStore.currentProfile.username}</div>
+			<div class="py-2">
+				<div class="text-2xl/4 font-medium">{profileStore.currentProfile.displayName}</div>
+				<div class="text-gray-500">@{profileStore.currentProfile.username}</div>
 			</div>
 		</div>
 	{/if}
