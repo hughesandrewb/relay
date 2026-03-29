@@ -3,9 +3,12 @@ package com.andhug.relay.message.infrastructure.persistence;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.*;
-
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "messages")
@@ -16,12 +19,11 @@ import java.util.UUID;
 @Builder
 public class MessageEntity {
 
-    @Id
-    private Long id;
+  @Id private Long id;
 
-    private UUID authorId;
+  private UUID authorId;
 
-    private UUID roomId;
+  private UUID roomId;
 
-    private String content;
+  private String content;
 }

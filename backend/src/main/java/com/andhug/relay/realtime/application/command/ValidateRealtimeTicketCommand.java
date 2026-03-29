@@ -5,13 +5,13 @@ import com.andhug.relay.shared.domain.exception.InvalidArgumentException;
 
 public record ValidateRealtimeTicketCommand(RealtimeTicketCode ticketCode) {
 
-    public ValidateRealtimeTicketCommand {
-        if (ticketCode == null) {
-            throw new InvalidArgumentException("Ticket code cannot be null");
-        }
+  public ValidateRealtimeTicketCommand {
+    if (ticketCode == null) {
+      throw new InvalidArgumentException("Ticket code cannot be null");
     }
+  }
 
-    public static ValidateRealtimeTicketCommand of(RealtimeTicketCode ticketCode) {
-        return new ValidateRealtimeTicketCommand(ticketCode);
-    }
+  public static ValidateRealtimeTicketCommand of(RealtimeTicketCode ticketCode) {
+    return new ValidateRealtimeTicketCommand(ticketCode);
+  }
 }

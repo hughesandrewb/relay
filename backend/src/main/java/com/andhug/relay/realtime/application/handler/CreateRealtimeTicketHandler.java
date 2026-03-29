@@ -1,30 +1,28 @@
 package com.andhug.relay.realtime.application.handler;
 
-import org.springframework.stereotype.Component;
-
 import com.andhug.relay.realtime.application.command.CreateRealtimeTicketCommand;
 import com.andhug.relay.realtime.application.mapper.RealtimeTicketMapper;
 import com.andhug.relay.realtime.domain.model.RealtimeTicket;
 import com.andhug.relay.realtime.domain.repository.RealtimeTicketRepository;
 import com.andhug.relay.realtime.infrastructure.web.dto.RealtimeTicketDto;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CreateRealtimeTicketHandler {
 
-    private final RealtimeTicketRepository realtimeTicketRepository;
+  private final RealtimeTicketRepository realtimeTicketRepository;
 
-    private final RealtimeTicketMapper realtimeTicketMapper;
+  private final RealtimeTicketMapper realtimeTicketMapper;
 
-    public RealtimeTicketDto handle(CreateRealtimeTicketCommand command) {
-        var ticket = RealtimeTicket.of(command.profileId(), command.ttlDuration());
+  public RealtimeTicketDto handle(CreateRealtimeTicketCommand command) {
+    var ticket = RealtimeTicket.of(command.profileId(), command.ttlDuration());
 
-        realtimeTicketRepository.save(ticket);
+    realtimeTicketRepository.save(ticket);
 
-        return realtimeTicketMapper.toDto(ticket);
-    }
+    return realtimeTicketMapper.toDto(ticket);
+  }
 }

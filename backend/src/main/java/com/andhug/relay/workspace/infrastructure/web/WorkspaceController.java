@@ -26,7 +26,6 @@ import com.andhug.relay.workspace.domain.model.Workspace;
 import com.andhug.relay.workspace.infrastructure.web.dto.WorkspaceDto;
 import com.andhug.relay.workspace.infrastructure.web.dto.request.CreateWorkspaceRequest;
 import com.andhug.relay.workspace.infrastructure.web.dto.request.UpdateWorkspaceRequest;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -34,19 +33,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/workspaces")
@@ -56,181 +60,234 @@ import java.util.UUID;
 @Tag(name = "Workspace Management", description = "APIs for managing workspaces")
 public class WorkspaceController {
 
-    private final WorkspaceCommandService workspaceApplicationService;
+  private final WorkspaceCommandService workspaceApplicationService;
 
-    private final RoomCommandService roomCommandService;
+  private final RoomCommandService roomCommandService;
 
-    private final RoomQueryService roomQueryService;
+  private final RoomQueryService roomQueryService;
 
-    private final CreateWorkspaceHandler createWorkspaceHandler;
+  private final CreateWorkspaceHandler createWorkspaceHandler;
 
-    private final WorkspaceQueryService workspaceQueryService;
+  private final WorkspaceQueryService workspaceQueryService;
 
-    private final RoomDomainService roomService;
+  private final RoomDomainService roomService;
 
-    private final WorkspaceMapper workspaceMapper;
+  private final WorkspaceMapper workspaceMapper;
 
-    private final InviteQueryService inviteQueryService;
+  private final InviteQueryService inviteQueryService;
 
-    private final CreateInviteIfNotExistsHandler createInviteIfNotExistsHandler;
+  private final CreateInviteIfNotExistsHandler createInviteIfNotExistsHandler;
 
-    @GetMapping(value = "/{workspace-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get workspace by ID", description = "Retrieves a specific workspace by its unique identifier")
-    @ApiResponses(value = {
+  @GetMapping(value = "/{workspace-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Get workspace by ID",
+      description = "Retrieves a specific workspace by its unique identifier")
+  @ApiResponses(
+      value = {
         @ApiResponse(responseCode = "200", description = "Workspace found"),
         @ApiResponse(responseCode = "404", description = "Workspace not found")
-    })
-    public ResponseEntity<WorkspaceDto> getWorkspace(
-        @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
-        @PathVariable("workspace-id") UUID workspaceId
-    ) {
+      })
+  public ResponseEntity<WorkspaceDto> getWorkspace(
+      @Parameter(
+              in = ParameterIn.PATH,
+              required = true,
+              name = "workspace-id",
+              schema = @Schema(type = "string"))
+          @PathVariable("workspace-id")
+          UUID workspaceId) {
 
-        WorkspaceDto workspace = workspaceQueryService
-            .getWorkspace(WorkspaceId.of(workspaceId));
+    WorkspaceDto workspace = workspaceQueryService.getWorkspace(WorkspaceId.of(workspaceId));
 
-        return ResponseEntity
-            .ok(workspace);
-    }
+    return ResponseEntity.ok(workspace);
+  }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Create workspace", description = "Create a workspace with the provided details")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Workspace created successfully")
-    })
-    public ResponseEntity<WorkspaceDto> createWorkspace(
-        @AuthenticationPrincipal Profile profile,
-        @RequestBody CreateWorkspaceRequest request
-    ) {
+  @PostMapping(
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Create workspace",
+      description = "Create a workspace with the provided details")
+  @ApiResponses(
+      value = {@ApiResponse(responseCode = "200", description = "Workspace created successfully")})
+  public ResponseEntity<WorkspaceDto> createWorkspace(
+      @AuthenticationPrincipal Profile profile, @RequestBody CreateWorkspaceRequest request) {
 
-        var createWorkspaceCommand = CreateWorkspaceCommand.builder()
-            .name(request.name())
-            .ownerId(profile.getId())
-            .build();
+    var createWorkspaceCommand =
+        CreateWorkspaceCommand.builder().name(request.name()).ownerId(profile.getId()).build();
 
-        WorkspaceId workspaceId = createWorkspaceHandler.handle(createWorkspaceCommand);
+    WorkspaceId workspaceId = createWorkspaceHandler.handle(createWorkspaceCommand);
 
-        WorkspaceDto workspace = workspaceQueryService.getWorkspace(workspaceId);
+    WorkspaceDto workspace = workspaceQueryService.getWorkspace(workspaceId);
 
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(workspace);
-    }
+    return ResponseEntity.status(HttpStatus.CREATED).body(workspace);
+  }
 
-    @PatchMapping(value = "/{workspace-id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Update workspace", description = "Update a workspace with the provided details")
-    @ApiResponses(value = {
+  @PatchMapping(
+      value = "/{workspace-id}",
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Update workspace",
+      description = "Update a workspace with the provided details")
+  @ApiResponses(
+      value = {
         @ApiResponse(responseCode = "200", description = "Workspace updated successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized to update workspace"),
         @ApiResponse(responseCode = "404", description = "Workspace not found")
-    })
-    public ResponseEntity<WorkspaceDto> updateWorkspace(
-        @AuthenticationPrincipal Profile profile,
-        @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
-        @PathVariable("workspace-id") UUID workspaceId,
-        @RequestBody UpdateWorkspaceRequest request
-    ) {
+      })
+  public ResponseEntity<WorkspaceDto> updateWorkspace(
+      @AuthenticationPrincipal Profile profile,
+      @Parameter(
+              in = ParameterIn.PATH,
+              required = true,
+              name = "workspace-id",
+              schema = @Schema(type = "string"))
+          @PathVariable("workspace-id")
+          UUID workspaceId,
+      @RequestBody UpdateWorkspaceRequest request) {
 
-        var command = UpdateWorkspaceCommand.builder()
+    var command =
+        UpdateWorkspaceCommand.builder()
             .workspaceId(WorkspaceId.of(workspaceId))
             .requesterId(profile.getId())
             .name(Optional.ofNullable(request.name()))
             .ownerId(Optional.empty())
             .build();
 
-        Workspace workspace = workspaceApplicationService
-            .updateWorkspace(command);
+    Workspace workspace = workspaceApplicationService.updateWorkspace(command);
 
-        return ResponseEntity
-            .status(HttpStatus.ACCEPTED)
-            .body(workspaceMapper.toDto(workspace));
-    }
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(workspaceMapper.toDto(workspace));
+  }
 
-    @GetMapping(value = "/{workspace-id}/rooms", produces =  MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get workspace rooms", description = "Returns list of room objects associated with provided workspace")
-    @ApiResponses(value = {
+  @GetMapping(value = "/{workspace-id}/rooms", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Get workspace rooms",
+      description = "Returns list of room objects associated with provided workspace")
+  @ApiResponses(
+      value = {
         @ApiResponse(responseCode = "200", description = "List of room objects"),
         @ApiResponse(responseCode = "404", description = "Workspace not found")
-    })
-    public ResponseEntity<List<RoomDto>> getRooms(
-        @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
-        @PathVariable("workspace-id") UUID workspaceId
-    ) {
+      })
+  public ResponseEntity<List<RoomDto>> getRooms(
+      @Parameter(
+              in = ParameterIn.PATH,
+              required = true,
+              name = "workspace-id",
+              schema = @Schema(type = "string"))
+          @PathVariable("workspace-id")
+          UUID workspaceId) {
 
-        List<Room> rooms = roomService.getRoomsByWorkspaceId(workspaceId);
+    List<Room> rooms = roomService.getRoomsByWorkspaceId(workspaceId);
 
-        return ResponseEntity.ok(rooms.stream().map(room -> {
-            return RoomDto.builder()
-                .id(room.getId().value())
-                .name(room.getName())
-                .workspaceId(room.getWorkspaceId().value())
-                .build();
-        }).toList());
-    }
+    return ResponseEntity.ok(
+        rooms.stream()
+            .map(
+                room -> {
+                  return RoomDto.builder()
+                      .id(room.getId().value())
+                      .name(room.getName())
+                      .workspaceId(room.getWorkspaceId().value())
+                      .build();
+                })
+            .toList());
+  }
 
-    @PostMapping(value = "/{workspace-id}/rooms", produces =  MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Create workspace room", description = "Creates a room object to be associated with provided workspace")
-    @ApiResponses(value = {
+  @PostMapping(
+      value = "/{workspace-id}/rooms",
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Create workspace room",
+      description = "Creates a room object to be associated with provided workspace")
+  @ApiResponses(
+      value = {
         @ApiResponse(responseCode = "201", description = "Room created successfully"),
         @ApiResponse(responseCode = "404", description = "Workspace not found")
-    })
-    public ResponseEntity<RoomDto> createRoom(
-        @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
-        @PathVariable("workspace-id") UUID workspaceId,
-        @RequestBody CreateRoomRequest request
-    ) {
+      })
+  public ResponseEntity<RoomDto> createRoom(
+      @Parameter(
+              in = ParameterIn.PATH,
+              required = true,
+              name = "workspace-id",
+              schema = @Schema(type = "string"))
+          @PathVariable("workspace-id")
+          UUID workspaceId,
+      @RequestBody CreateRoomRequest request) {
 
-        var createRoomCommand = new CreateRoomCommand(WorkspaceId.of(workspaceId), request.name());
+    var createRoomCommand = new CreateRoomCommand(WorkspaceId.of(workspaceId), request.name());
 
-        RoomId roomId = roomCommandService.createRoom(createRoomCommand);
+    RoomId roomId = roomCommandService.createRoom(createRoomCommand);
 
-        RoomDto room = roomQueryService.getRoom(roomId);
+    RoomDto room = roomQueryService.getRoom(roomId);
 
-        return ResponseEntity
-            .ok(room);
-    }
+    return ResponseEntity.ok(room);
+  }
 
-    @GetMapping(value = "/{workspace-id}/members", produces =   MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get members", description = "Returns a list of profiles that are members of provided workspace")
-    @ApiResponses(value = {
+  @GetMapping(value = "/{workspace-id}/members", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Get members",
+      description = "Returns a list of profiles that are members of provided workspace")
+  @ApiResponses(
+      value = {
         @ApiResponse(responseCode = "201", description = "List of Profile objects"),
         @ApiResponse(responseCode = "404", description = "Workspace not found")
-    })
-    public ResponseEntity<List<ProfileDto>> getMembers(
-        @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
-        @PathVariable("workspace-id") UUID workspaceId,
+      })
+  public ResponseEntity<List<ProfileDto>> getMembers(
+      @Parameter(
+              in = ParameterIn.PATH,
+              required = true,
+              name = "workspace-id",
+              schema = @Schema(type = "string"))
+          @PathVariable("workspace-id")
+          UUID workspaceId,
+      @Parameter(
+              in = ParameterIn.QUERY,
+              required = false,
+              name = "limit",
+              schema = @Schema(type = "string"),
+              description = "Maximum number of messages to return")
+          @RequestParam(required = false, defaultValue = "50")
+          int limit,
+      @Parameter(
+              in = ParameterIn.QUERY,
+              required = false,
+              name = "limit",
+              schema = @Schema(type = "string"),
+              description = "Only returns messages after the message with this ID")
+          @RequestParam(required = false)
+          Long after) {
 
-        @Parameter(in = ParameterIn.QUERY, required = false, name = "limit", schema = @Schema(type = "string"), description = "Maximum number of messages to return")
-        @RequestParam(required = false, defaultValue = "50") int limit,
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
-        @Parameter(in = ParameterIn.QUERY, required = false, name = "limit", schema = @Schema(type = "string"), description = "Only returns messages after the message with this ID")
-        @RequestParam(required = false) Long after
-    ) {
+  @GetMapping(value = "/{workspace-id}/invite", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Get workspace invite",
+      description = "Returns an invite for the workspace to send to another user")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Workspace invite"),
+    @ApiResponse(responseCode = "404", description = "Workspace not found")
+  })
+  public ResponseEntity<InviteDto> getInvite(
+      @AuthenticationPrincipal Profile profile,
+      @Parameter(
+              in = ParameterIn.PATH,
+              required = true,
+              name = "workspace-id",
+              schema = @Schema(type = "string"))
+          @PathVariable("workspace-id")
+          UUID workspaceId) {
 
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @GetMapping(value = "/{workspace-id}/invite", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get workspace invite", description = "Returns an invite for the workspace to send to another user")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Workspace invite"),
-        @ApiResponse(responseCode = "404", description = "Workspace not found")
-    })
-    public ResponseEntity<InviteDto> getInvite(
-        @AuthenticationPrincipal Profile profile,
-        @Parameter(in = ParameterIn.PATH, required = true, name = "workspace-id", schema = @Schema(type = "string"))
-        @PathVariable("workspace-id") UUID workspaceId
-    ) {
-
-        var createInviteIfNotExistsCommand = CreateInviteIfNotExistsCommand.builder()
+    var createInviteIfNotExistsCommand =
+        CreateInviteIfNotExistsCommand.builder()
             .workspaceId(WorkspaceId.of(workspaceId))
             .senderId(profile.getId())
             .build();
 
-        InviteId inviteId = createInviteIfNotExistsHandler.handle(createInviteIfNotExistsCommand);
+    InviteId inviteId = createInviteIfNotExistsHandler.handle(createInviteIfNotExistsCommand);
 
-        InviteDto invite = inviteQueryService.getInvite(inviteId);
+    InviteDto invite = inviteQueryService.getInvite(inviteId);
 
-        return ResponseEntity
-            .ok(invite);
-    }
+    return ResponseEntity.ok(invite);
+  }
 }

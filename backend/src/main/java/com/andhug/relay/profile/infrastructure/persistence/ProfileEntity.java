@@ -1,9 +1,15 @@
 package com.andhug.relay.profile.infrastructure.persistence;
 
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "profile")
@@ -14,14 +20,13 @@ import java.util.UUID;
 @Builder
 public class ProfileEntity {
 
-    @Id
-    private UUID id;
+  @Id private UUID id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+  @Column(nullable = false, unique = true)
+  private String username;
 
-    private String displayName;
+  private String displayName;
 
-    @Column(nullable = false)
-    private Integer accentColor;
+  @Column(nullable = false)
+  private Integer accentColor;
 }

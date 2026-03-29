@@ -4,7 +4,6 @@ import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.realtime.application.command.CreateRealtimeTicketCommand;
 import com.andhug.relay.realtime.application.handler.CreateRealtimeTicketHandler;
 import com.andhug.relay.realtime.infrastructure.web.dto.RealtimeTicketDto;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,18 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RealtimeTicketController {
 
-    private final CreateRealtimeTicketHandler createRealtimeTicketHandler;
+  private final CreateRealtimeTicketHandler createRealtimeTicketHandler;
 
-    @GetMapping("/ticket")
-    public ResponseEntity<RealtimeTicketDto> getRealtimeTicket(
-        @AuthenticationPrincipal Profile profile
-    ) {
+  @GetMapping("/ticket")
+  public ResponseEntity<RealtimeTicketDto> getRealtimeTicket(
+      @AuthenticationPrincipal Profile profile) {
 
-        var createRealtimeTicketCommand = CreateRealtimeTicketCommand.of(profile.getId());
+    var createRealtimeTicketCommand = CreateRealtimeTicketCommand.of(profile.getId());
 
-        RealtimeTicketDto ticket = createRealtimeTicketHandler.handle(createRealtimeTicketCommand);
+    RealtimeTicketDto ticket = createRealtimeTicketHandler.handle(createRealtimeTicketCommand);
 
-        return ResponseEntity
-            .ok(ticket);
-    }
+    return ResponseEntity.ok(ticket);
+  }
 }

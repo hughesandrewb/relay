@@ -1,13 +1,12 @@
 package com.andhug.relay.room.infrastructure.persistence;
 
-import java.util.UUID;
-
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +18,5 @@ import lombok.Setter;
 @Setter
 public abstract class AbstractRoomEntity {
 
-    @Id
-    private UUID id;
+  @Id private UUID id;
 }

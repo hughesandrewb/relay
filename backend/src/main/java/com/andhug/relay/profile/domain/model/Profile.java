@@ -1,11 +1,13 @@
 package com.andhug.relay.profile.domain.model;
 
-import lombok.*;
-
 import com.andhug.relay.shared.domain.model.AggregateRoot;
 import com.andhug.relay.shared.domain.model.Color;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import com.andhug.relay.utils.RandomUtils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -13,31 +15,32 @@ import com.andhug.relay.utils.RandomUtils;
 @Builder
 public class Profile extends AggregateRoot {
 
-    private ProfileId id;
+  private ProfileId id;
 
-    private String username;
+  private String username;
 
-    private DisplayName displayName;
+  private DisplayName displayName;
 
-    private Color accentColor;
+  private Color accentColor;
 
-    public static Profile create(ProfileId id, String username, DisplayName displayName, Color accentColor) {
-        if (id == null) {
-            throw new IllegalArgumentException("id cannot be null");
-        }
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("username cannot be null or blank");
-        }
-        if (displayName == null) {
-            displayName = DisplayName.of(username);
-        }
-        if (accentColor == null) {
-            accentColor = Color.of(RandomUtils.generateRandomColor());
-        }
-
-        var profile = new Profile(id, username, displayName, accentColor);
-        // TODO: register profile created event
-
-        return profile;
+  public static Profile create(
+      ProfileId id, String username, DisplayName displayName, Color accentColor) {
+    if (id == null) {
+      throw new IllegalArgumentException("id cannot be null");
     }
+    if (username == null || username.isBlank()) {
+      throw new IllegalArgumentException("username cannot be null or blank");
+    }
+    if (displayName == null) {
+      displayName = DisplayName.of(username);
+    }
+    if (accentColor == null) {
+      accentColor = Color.of(RandomUtils.generateRandomColor());
+    }
+
+    var profile = new Profile(id, username, displayName, accentColor);
+    // TODO: register profile created event
+
+    return profile;
+  }
 }

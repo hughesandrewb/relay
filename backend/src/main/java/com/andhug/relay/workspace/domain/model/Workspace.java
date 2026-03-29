@@ -1,14 +1,12 @@
 package com.andhug.relay.workspace.domain.model;
 
-import java.time.LocalDateTime;
-
 import com.andhug.relay.shared.domain.model.AggregateRoot;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import com.andhug.relay.shared.domain.model.WorkspaceId;
 import com.andhug.relay.workspace.domain.event.WorkspaceCreatedEvent;
 import com.andhug.relay.workspace.domain.exception.InvalidWorkspaceNameException;
 import com.andhug.relay.workspace.domain.exception.InvalidWorkspaceOwnerException;
-
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,44 +18,41 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Workspace extends AggregateRoot {
 
-    private WorkspaceId id;
+  private WorkspaceId id;
 
-    private String name;
+  private String name;
 
-    private ProfileId ownerId;
+  private ProfileId ownerId;
 
-    private LocalDateTime createdAt;
+  private LocalDateTime createdAt;
 
-    public static Workspace create(String name, ProfileId ownerId) {
-        Workspace created = Workspace.builder()
-            .id(WorkspaceId.generate())
-            .name(name)
-            .ownerId(ownerId)
-            .build();
+  public static Workspace create(String name, ProfileId ownerId) {
+    Workspace created =
+        Workspace.builder().id(WorkspaceId.generate()).name(name).ownerId(ownerId).build();
 
-        created.registerEvent(new WorkspaceCreatedEvent(created.id));
+    created.registerEvent(new WorkspaceCreatedEvent(created.id));
 
-        return created;
+    return created;
+  }
+
+  public void rename(String newName) {
+    if (newName == null || newName.isBlank()) {
+      throw new InvalidWorkspaceNameException();
     }
+    this.name = newName;
+  }
 
-    public void rename(String newName) {
-        if (newName == null || newName.isBlank()) {
-            throw new InvalidWorkspaceNameException();
-        }
-        this.name = newName;
+  public void changeOwner(ProfileId newOwnerId) {
+    if (newOwnerId == null) {
+      throw new InvalidWorkspaceOwnerException();
     }
+    this.ownerId = newOwnerId;
+  }
 
-    public void changeOwner(ProfileId newOwnerId) {
-        if (newOwnerId == null) {
-            throw new InvalidWorkspaceOwnerException();
-        }
-        this.ownerId = newOwnerId;
+  public boolean isOwnedBy(ProfileId userId) {
+    if (userId == null) {
+      throw new InvalidWorkspaceOwnerException();
     }
-
-    public boolean isOwnedBy(ProfileId userId) {
-        if (userId == null) {
-            throw new InvalidWorkspaceOwnerException();
-        }
-        return this.ownerId.equals(userId);
-    }
+    return this.ownerId.equals(userId);
+  }
 }

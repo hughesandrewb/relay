@@ -2,7 +2,6 @@ package com.andhug.relay.invite.application.command;
 
 import com.andhug.relay.invite.domain.model.InviteCode;
 import com.andhug.relay.shared.domain.model.ProfileId;
-
 import lombok.Builder;
 
 @Builder

@@ -1,12 +1,7 @@
 package com.andhug.relay.workspace.infrastructure.web.dto;
 
+import java.util.UUID;
 import lombok.Builder;
 
-import java.util.UUID;
-
 @Builder
-public record WorkspaceSummaryDto(
-    UUID id,
-    String name,
-    Boolean owner
-) {}
+public record WorkspaceSummaryDto(UUID id, String name, Boolean owner) {}

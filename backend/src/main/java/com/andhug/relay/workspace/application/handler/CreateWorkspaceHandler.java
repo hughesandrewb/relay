@@ -1,11 +1,5 @@
 package com.andhug.relay.workspace.application.handler;
 
-import java.util.stream.Stream;
-
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.domain.model.RoomType;
 import com.andhug.relay.room.domain.repository.RoomRepository;
@@ -15,50 +9,43 @@ import com.andhug.relay.workspace.domain.model.Workspace;
 import com.andhug.relay.workspace.domain.repository.WorkspaceRepository;
 import com.andhug.relay.workspacemembership.domain.model.WorkspaceMember;
 import com.andhug.relay.workspacemembership.domain.repository.WorkspaceMemberRepository;
-
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
 @AllArgsConstructor
 public class CreateWorkspaceHandler {
-    
-    private final WorkspaceRepository workspaceRepository;
 
-    private final WorkspaceMemberRepository workspaceMemberRepository;
+  private final WorkspaceRepository workspaceRepository;
 
-    private final RoomRepository roomRepository;
+  private final WorkspaceMemberRepository workspaceMemberRepository;
 
-    private final ApplicationEventPublisher eventPublisher;
+  private final RoomRepository roomRepository;
 
-    @Transactional
-    public WorkspaceId handle(CreateWorkspaceCommand command) {
+  private final ApplicationEventPublisher eventPublisher;
 
-        Workspace workspace = Workspace.create(
-            command.name(),
-            command.ownerId()
-        );
+  @Transactional
+  public WorkspaceId handle(CreateWorkspaceCommand command) {
 
-        WorkspaceMember workspaceMember = WorkspaceMember.create(
-            workspace.getId(),
-            command.ownerId()
-        );
+    Workspace workspace = Workspace.create(command.name(), command.ownerId());
 
-        Room room = Room.create(
-            "general",
-            workspace.getId(),
-            RoomType.TEXT
-        );
+    WorkspaceMember workspaceMember = WorkspaceMember.create(workspace.getId(), command.ownerId());
 
-        workspaceRepository.save(workspace);
-        workspaceMemberRepository.save(workspaceMember);
-        roomRepository.save(room);
+    Room room = Room.create("general", workspace.getId(), RoomType.TEXT);
 
-        Stream.of(workspace, workspaceMember, room)
-            .flatMap(aggregate -> aggregate.pullDomainEvents().stream())
-            .forEach(eventPublisher::publishEvent);
+    workspaceRepository.save(workspace);
+    workspaceMemberRepository.save(workspaceMember);
+    roomRepository.save(room);
 
-        return workspace.getId();
-    }
+    Stream.of(workspace, workspaceMember, room)
+        .flatMap(aggregate -> aggregate.pullDomainEvents().stream())
+        .forEach(eventPublisher::publishEvent);
+
+    return workspace.getId();
+  }
 }

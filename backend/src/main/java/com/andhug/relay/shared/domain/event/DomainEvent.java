@@ -4,9 +4,9 @@ import java.time.Instant;
 
 public class DomainEvent {
 
-    private final Instant occurredAt = Instant.now();
+  private final Instant occurredAt = Instant.now();
 
-    public Instant getOccurredAt() {
-        return occurredAt;
-    }
+  public Instant getOccurredAt() {
+    return occurredAt;
+  }
 }

@@ -1,56 +1,47 @@
 package com.andhug.relay.workspace.infrastructure.persistence;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.stereotype.Component;
-
 import com.andhug.relay.shared.domain.model.WorkspaceId;
 import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
 import com.andhug.relay.workspace.domain.exception.WorkspaceNotFoundException;
 import com.andhug.relay.workspace.domain.model.Workspace;
 import com.andhug.relay.workspace.domain.repository.WorkspaceRepository;
-
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class WorkspaceRepositoryImpl implements WorkspaceRepository {
 
-    private final WorkspaceJpaRepository workspaceJpaRepository;
+  private final WorkspaceJpaRepository workspaceJpaRepository;
 
-    private final WorkspaceMapper workspaceMapper;
+  private final WorkspaceMapper workspaceMapper;
 
-	@Override
-	public Workspace findById(WorkspaceId workspaceId) {
+  @Override
+  public Workspace findById(WorkspaceId workspaceId) {
 
-        return workspaceJpaRepository
-            .findById(workspaceId.value())
-            .map(workspaceMapper::toDomain)
-            .orElseThrow(() -> new WorkspaceNotFoundException(workspaceId));
-	}
+    return workspaceJpaRepository
+        .findById(workspaceId.value())
+        .map(workspaceMapper::toDomain)
+        .orElseThrow(() -> new WorkspaceNotFoundException(workspaceId));
+  }
 
-	@Override
-	public List<Workspace> findAllById(List<WorkspaceId> workspaceIds) {
+  @Override
+  public List<Workspace> findAllById(List<WorkspaceId> workspaceIds) {
 
-        List<UUID> ids = workspaceIds.stream()
-            .map(WorkspaceId::value)
-            .toList();
-        
-        return workspaceJpaRepository
-            .findAllById(ids)
-            .stream()
-            .map(workspaceMapper::toDomain)
-            .toList();
-	}
+    List<UUID> ids = workspaceIds.stream().map(WorkspaceId::value).toList();
 
-	@Override
-	public Workspace save(Workspace workspace) {
+    return workspaceJpaRepository.findAllById(ids).stream().map(workspaceMapper::toDomain).toList();
+  }
 
-        WorkspaceEntity workspaceEntity = workspaceMapper.toEntity(workspace);
+  @Override
+  public Workspace save(Workspace workspace) {
 
-        workspaceJpaRepository.save(workspaceEntity);
+    WorkspaceEntity workspaceEntity = workspaceMapper.toEntity(workspace);
 
-        return workspaceMapper.toDomain(workspaceEntity);
-	}
+    workspaceJpaRepository.save(workspaceEntity);
+
+    return workspaceMapper.toDomain(workspaceEntity);
+  }
 }
