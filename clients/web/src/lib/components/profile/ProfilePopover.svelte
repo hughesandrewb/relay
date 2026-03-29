@@ -2,7 +2,7 @@
 	import { profileStore } from '$lib/stores/profile.svelte';
 </script>
 
-<div class="absolute bottom-4 left-4 rounded border bg-white p-2">
+<div class="absolute bottom-4 left-4 rounded border bg-white p-2 min-w-60">
 	{#if !profileStore.isLoading && profileStore.currentProfile}
 		<div class="flex flex-row items-center gap-4">
 			<div class="relative">
