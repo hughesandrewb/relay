@@ -1,12 +1,14 @@
-package com.andhug.relay.realtime;
+package com.andhug.relay.realtime.application.service;
 
 import com.andhug.relay.message.domain.events.MessageCreatedEvent;
 import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
 import com.andhug.relay.profile.application.mapper.ProfileMapper;
 import com.andhug.relay.profile.application.service.ProfileService;
-import com.andhug.relay.realtime.dto.RealtimeMessagePayload;
-import com.andhug.relay.realtime.registry.Connection;
-import com.andhug.relay.realtime.registry.ConnectionRegistry;
+import com.andhug.relay.realtime.domain.ConnectionRegistry;
+import com.andhug.relay.realtime.domain.model.Connection;
+import com.andhug.relay.realtime.domain.model.GatewayEvent;
+import com.andhug.relay.realtime.domain.model.GatewayOpcode;
+import com.andhug.relay.realtime.infrastructure.web.dto.RealtimeMessagePayload;
 import com.andhug.relay.room.application.mapper.RoomMapper;
 import com.andhug.relay.room.domain.event.RoomUpdatedEvent;
 import com.andhug.relay.room.domain.model.Room;
@@ -117,7 +119,7 @@ public class NotificationDirector {
 
     private void broadcast(Set<UUID> recipients, RealtimeMessagePayload<Object> message) {
         for (UUID profileId : recipients) {
-            Connection connection = connectionRegistry.getConnection(profileId);
+            Connection connection = connectionRegistry.getConnection(ProfileId.of(profileId));
 
             if (connection == null || !connection.isActive()) {
                 log.warn("Connection {} is not open", profileId);

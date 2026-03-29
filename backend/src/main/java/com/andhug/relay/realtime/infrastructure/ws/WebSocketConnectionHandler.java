@@ -1,9 +1,11 @@
-package com.andhug.relay.realtime.ws;
+package com.andhug.relay.realtime.infrastructure.ws;
 
-import com.andhug.relay.realtime.NotificationDirector;
-import com.andhug.relay.realtime.events.RealtimeConnectionClosedEvent;
-import com.andhug.relay.realtime.events.RealtimeConnectionOpenedEvent;
-import com.andhug.relay.realtime.registry.ConnectionRegistry;
+import com.andhug.relay.realtime.application.service.NotificationDirector;
+import com.andhug.relay.realtime.domain.ConnectionRegistry;
+import com.andhug.relay.realtime.domain.event.RealtimeConnectionClosedEvent;
+import com.andhug.relay.realtime.domain.event.RealtimeConnectionOpenedEvent;
+import com.andhug.relay.shared.domain.model.ProfileId;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -12,7 +14,6 @@ import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -28,10 +29,10 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
-        UUID profileId = getProfileId(session);
+        ProfileId profileId = getProfileId(session);
 
         connectionRegistry.registerConnection(new WebSocketConnection(session), profileId);
-        notificationDirector.subscribeToRooms(profileId);
+        notificationDirector.subscribeToRooms(profileId.value());
 
         eventPublisher.publishEvent(RealtimeConnectionOpenedEvent.builder()
                 .profileId(profileId)
@@ -59,7 +60,7 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
         log.info("Disconnected from {}", session.getId());
 
-        UUID profileId = getProfileId(session);
+        ProfileId profileId = getProfileId(session);
 
         eventPublisher.publishEvent(RealtimeConnectionClosedEvent.builder()
                 .profileId(profileId)
@@ -67,8 +68,8 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
                 .build());
     }
 
-    private UUID getProfileId(WebSocketSession session) {
+    private ProfileId getProfileId(WebSocketSession session) {
 
-        return (UUID) session.getAttributes().get("id");
+        return (ProfileId) session.getAttributes().get("id");
     }
 }

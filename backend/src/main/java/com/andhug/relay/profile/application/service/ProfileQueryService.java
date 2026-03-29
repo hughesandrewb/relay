@@ -26,4 +26,8 @@ public class ProfileQueryService {
             .map(profileMapper::toDto)
             .toList();
     }
+
+    public ProfileDto getProfile(ProfileId profileId) {
+        return profileMapper.toDto(profileRepository.findById(profileId));
+    }
 }

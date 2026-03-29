@@ -1,4 +1,4 @@
-package com.andhug.relay.realtime.dto;
+package com.andhug.relay.realtime.infrastructure.web.dto;
 
 import lombok.Builder;
 

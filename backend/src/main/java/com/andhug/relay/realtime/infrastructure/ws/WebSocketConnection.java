@@ -1,6 +1,6 @@
-package com.andhug.relay.realtime.ws;
+package com.andhug.relay.realtime.infrastructure.ws;
 
-import com.andhug.relay.realtime.registry.Connection;
+import com.andhug.relay.realtime.domain.model.Connection;
 import com.andhug.relay.utils.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;

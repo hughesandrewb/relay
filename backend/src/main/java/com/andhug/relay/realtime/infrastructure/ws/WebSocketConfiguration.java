@@ -1,4 +1,4 @@
-package com.andhug.relay.realtime.ws;
+package com.andhug.relay.realtime.infrastructure.ws;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

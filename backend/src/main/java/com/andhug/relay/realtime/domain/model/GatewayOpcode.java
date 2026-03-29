@@ -1,4 +1,4 @@
-package com.andhug.relay.realtime;
+package com.andhug.relay.realtime.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

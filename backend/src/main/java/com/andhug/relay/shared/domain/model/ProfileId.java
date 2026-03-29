@@ -2,13 +2,14 @@ package com.andhug.relay.shared.domain.model;
 
 import java.util.UUID;
 
+import com.andhug.relay.shared.domain.exception.InvalidArgumentException;
 import com.andhug.relay.utils.IdValidator;
 
 public record ProfileId(UUID value) {
 
     public ProfileId {
         if (value == null) {
-            throw new IllegalArgumentException("ProfileId cannot be null");
+            throw new InvalidArgumentException("ProfileId cannot be null");
         }
     }
 

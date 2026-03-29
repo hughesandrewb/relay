@@ -32,6 +32,20 @@ public class ProfileRepositoryImpl implements ProfileRepository {
         return profileMapper.toDomain(profileEntity);
     }
 
+    @Override
+    public List<Profile> findAllById(List<ProfileId> profileIds) {
+        Set<UUID> uuids = profileIds
+            .stream()
+            .map(ProfileId::value)
+            .collect(Collectors.toSet());
+
+        return profileJpaRepository
+            .findAllById(uuids)
+            .stream()
+            .map(profileMapper::toDomain)
+            .toList();
+    }
+
 	@Override
 	public List<Profile> getProfiles(List<ProfileId> profileIds) {
         Set<UUID> uuids = profileIds

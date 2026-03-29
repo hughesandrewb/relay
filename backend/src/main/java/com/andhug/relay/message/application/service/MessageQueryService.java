@@ -13,8 +13,8 @@ import com.andhug.relay.message.domain.model.Message;
 import com.andhug.relay.message.domain.model.MessageId;
 import com.andhug.relay.message.domain.repository.MessageRepository;
 import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
-import com.andhug.relay.profile.application.service.ProfileQueryService;
-import com.andhug.relay.profile.infrastructure.web.dto.ProfileDto;
+import com.andhug.relay.profile.domain.model.Profile;
+import com.andhug.relay.profile.domain.repository.ProfileRepository;
 import com.andhug.relay.shared.domain.model.ProfileId;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class MessageQueryService {
 
     private final MessageRepository messageRepository;
 
-    private final ProfileQueryService profileQueryService;
+    private final ProfileRepository profileRepository;
 
     private final MessageMapper messageMapper;
 
@@ -38,29 +38,27 @@ public class MessageQueryService {
             .map(Message::getAuthorId)
             .toList();
 
-        List<ProfileDto> authors = profileQueryService
-            .getProfiles(authorIds);
+        List<Profile> authors = profileRepository.findAllById(authorIds);
 
-        Map<ProfileId, ProfileDto> authorMap = new HashMap<>();
+        Map<ProfileId, Profile> authorMap = new HashMap<>();
 
-        for (ProfileDto author : authors) {
-            authorMap.put(ProfileId.of(author.id()), author);
+        for (Profile author : authors) {
+            authorMap.put(author.getId(), author);
         }
 
         return messages.stream()
             .map(message -> {
-                return MessageDto.builder()
-                    .id(message.getId().value())
-                    .author(authorMap.get(message.getAuthorId()))
-                    .content(message.getContent())
-                    .roomId(message.getRoomId().value())
-                    .build();
+                Profile author = authorMap.get(message.getAuthorId());
+                return messageMapper.toDto(message, author);
             })
             .toList();
     }
 
     @Transactional(readOnly = true)
     public MessageDto getMessage(MessageId messageId) {
-        return messageMapper.toDto(messageRepository.findById(messageId));
+        Message message = messageRepository.findById(messageId);
+        Profile author = profileRepository.findById(message.getAuthorId());
+
+        return messageMapper.toDto(message, author);
     }
 }
