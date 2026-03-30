@@ -6,10 +6,10 @@ import com.andhug.relay.invite.domain.model.InviteId;
 import com.andhug.relay.invite.domain.repository.InviteRepository;
 import com.andhug.relay.shared.application.handler.SyncCommandHandler;
 import com.andhug.relay.shared.domain.exception.NotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
