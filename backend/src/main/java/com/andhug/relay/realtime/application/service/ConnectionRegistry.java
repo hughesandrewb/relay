@@ -32,6 +32,7 @@ public class ConnectionRegistry {
     log.info("Registered connection for {}", profileId);
   }
 
+  @Transactional
   public void unregisterConnection(ProfileId profileId) {
 
     this.registry.remove(profileId.value());
