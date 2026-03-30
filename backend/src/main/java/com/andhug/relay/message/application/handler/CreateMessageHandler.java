@@ -5,6 +5,7 @@ import com.andhug.relay.message.application.command.CreateMessageCommand;
 import com.andhug.relay.message.domain.model.Message;
 import com.andhug.relay.message.domain.model.MessageId;
 import com.andhug.relay.message.domain.repository.MessageRepository;
+import com.andhug.relay.shared.application.handler.SyncCommandHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class CreateMessageHandler {
+public class CreateMessageHandler implements SyncCommandHandler<CreateMessageCommand, MessageId> {
 
   private final MessageRepository messageRepository;
 

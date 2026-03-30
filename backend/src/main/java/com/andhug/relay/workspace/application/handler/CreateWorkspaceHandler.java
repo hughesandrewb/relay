@@ -3,6 +3,7 @@ package com.andhug.relay.workspace.application.handler;
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.domain.model.RoomType;
 import com.andhug.relay.room.domain.repository.RoomRepository;
+import com.andhug.relay.shared.application.handler.SyncCommandHandler;
 import com.andhug.relay.shared.domain.model.WorkspaceId;
 import com.andhug.relay.workspace.application.command.CreateWorkspaceCommand;
 import com.andhug.relay.workspace.domain.model.Workspace;
@@ -19,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class CreateWorkspaceHandler {
+public class CreateWorkspaceHandler
+    implements SyncCommandHandler<CreateWorkspaceCommand, WorkspaceId> {
 
   private final WorkspaceRepository workspaceRepository;
 

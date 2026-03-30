@@ -2,6 +2,7 @@ package com.andhug.relay.realtime.application.handler;
 
 import com.andhug.relay.realtime.application.command.ValidateRealtimeTicketCommand;
 import com.andhug.relay.realtime.domain.repository.RealtimeTicketRepository;
+import com.andhug.relay.shared.application.handler.SyncCommandHandler;
 import com.andhug.relay.shared.domain.exception.DomainException;
 import com.andhug.relay.shared.domain.exception.InvalidArgumentException;
 import com.andhug.relay.shared.domain.model.ProfileId;
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ValidateRealtimeTicketHandler {
+public class ValidateRealtimeTicketHandler
+    implements SyncCommandHandler<ValidateRealtimeTicketCommand, ProfileId> {
 
   private final RealtimeTicketRepository realtimeTicketRepository;
 

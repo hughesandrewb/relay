@@ -12,6 +12,10 @@ public record ProfileId(UUID value) {
     }
   }
 
+  public ProfileId(String value) {
+    this(IdValidator.validate(value, ProfileId.class.getName()));
+  }
+
   public static ProfileId generate() {
     return new ProfileId(UUID.randomUUID());
   }
@@ -22,6 +26,10 @@ public record ProfileId(UUID value) {
 
   public static ProfileId of(String value) {
     return new ProfileId(IdValidator.validate(value, ProfileId.class.getName()));
+  }
+
+  public String getCacheKey() {
+    return "profile:" + value.toString();
   }
 
   @Override

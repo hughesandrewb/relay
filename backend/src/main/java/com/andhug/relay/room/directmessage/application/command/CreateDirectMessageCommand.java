@@ -1,11 +1,14 @@
 package com.andhug.relay.room.directmessage.application.command;
 
 import com.andhug.relay.room.directmessage.domain.exceptions.NotEnoughParticipantsException;
+import com.andhug.relay.shared.application.command.SyncCommand;
 import com.andhug.relay.shared.domain.exception.InvalidArgumentException;
 import com.andhug.relay.shared.domain.model.ProfileId;
+import com.andhug.relay.shared.domain.model.RoomId;
 import java.util.Set;
 
-public record CreateDirectMessageCommand(Set<ProfileId> participants) {
+public record CreateDirectMessageCommand(Set<ProfileId> participants)
+    implements SyncCommand<RoomId> {
 
   public CreateDirectMessageCommand {
     if (participants == null) {

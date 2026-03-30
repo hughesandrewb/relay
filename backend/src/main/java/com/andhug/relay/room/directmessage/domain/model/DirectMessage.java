@@ -19,6 +19,10 @@ public class DirectMessage extends AggregateRoot {
 
   private Set<ProfileId> participants;
 
+  public static DirectMessage create(Set<ProfileId> participants) {
+    return DirectMessage.builder().id(RoomId.generate()).participants(participants).build();
+  }
+
   public boolean isGroupDm() {
     return participants.size() > 2;
   }

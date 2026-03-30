@@ -8,21 +8,18 @@ import com.andhug.relay.invite.infrastructure.web.dto.InviteDto;
 import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.profile.infrastructure.web.dto.ProfileDto;
 import com.andhug.relay.room.application.command.CreateRoomCommand;
-import com.andhug.relay.room.application.service.RoomCommandService;
 import com.andhug.relay.room.application.service.RoomQueryService;
 import com.andhug.relay.room.domain.model.Room;
 import com.andhug.relay.room.domain.service.RoomDomainService;
 import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
 import com.andhug.relay.room.infrastructure.web.dto.request.CreateRoomRequest;
+import com.andhug.relay.shared.application.command.CommandBus;
 import com.andhug.relay.shared.domain.model.RoomId;
 import com.andhug.relay.shared.domain.model.WorkspaceId;
 import com.andhug.relay.workspace.application.command.CreateWorkspaceCommand;
 import com.andhug.relay.workspace.application.command.UpdateWorkspaceCommand;
 import com.andhug.relay.workspace.application.handler.CreateWorkspaceHandler;
-import com.andhug.relay.workspace.application.mapper.WorkspaceMapper;
-import com.andhug.relay.workspace.application.service.WorkspaceCommandService;
 import com.andhug.relay.workspace.application.service.WorkspaceQueryService;
-import com.andhug.relay.workspace.domain.model.Workspace;
 import com.andhug.relay.workspace.infrastructure.web.dto.WorkspaceDto;
 import com.andhug.relay.workspace.infrastructure.web.dto.request.CreateWorkspaceRequest;
 import com.andhug.relay.workspace.infrastructure.web.dto.request.UpdateWorkspaceRequest;
@@ -60,9 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Workspace Management", description = "APIs for managing workspaces")
 public class WorkspaceController {
 
-  private final WorkspaceCommandService workspaceApplicationService;
-
-  private final RoomCommandService roomCommandService;
+  private final CommandBus commandBus;
 
   private final RoomQueryService roomQueryService;
 
@@ -71,8 +66,6 @@ public class WorkspaceController {
   private final WorkspaceQueryService workspaceQueryService;
 
   private final RoomDomainService roomService;
-
-  private final WorkspaceMapper workspaceMapper;
 
   private final InviteQueryService inviteQueryService;
 
@@ -154,9 +147,11 @@ public class WorkspaceController {
             .ownerId(Optional.empty())
             .build();
 
-    Workspace workspace = workspaceApplicationService.updateWorkspace(command);
+    WorkspaceId updatedWorkspaceId = commandBus.dispatch(command);
 
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(workspaceMapper.toDto(workspace));
+    WorkspaceDto workspace = workspaceQueryService.getWorkspace(updatedWorkspaceId);
+
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(workspace);
   }
 
   @GetMapping(value = "/{workspace-id}/rooms", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -216,7 +211,7 @@ public class WorkspaceController {
 
     var createRoomCommand = new CreateRoomCommand(WorkspaceId.of(workspaceId), request.name());
 
-    RoomId roomId = roomCommandService.createRoom(createRoomCommand);
+    RoomId roomId = commandBus.dispatch(createRoomCommand);
 
     RoomDto room = roomQueryService.getRoom(roomId);
 

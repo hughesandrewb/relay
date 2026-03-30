@@ -3,6 +3,7 @@ package com.andhug.relay.invite.application.handler;
 import com.andhug.relay.invite.application.command.AcceptInviteCommand;
 import com.andhug.relay.invite.domain.model.Invite;
 import com.andhug.relay.invite.domain.repository.InviteRepository;
+import com.andhug.relay.shared.application.handler.AsyncCommandHandler;
 import com.andhug.relay.workspacemembership.domain.model.WorkspaceMember;
 import com.andhug.relay.workspacemembership.domain.repository.WorkspaceMemberRepository;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class AcceptInviteHandler {
+public class AcceptInviteHandler implements AsyncCommandHandler<AcceptInviteCommand> {
 
   private final InviteRepository inviteRepository;
 
@@ -22,6 +23,7 @@ public class AcceptInviteHandler {
 
   private final ApplicationEventPublisher eventPublisher;
 
+  @Override
   @Transactional
   public void handle(AcceptInviteCommand command) {
 

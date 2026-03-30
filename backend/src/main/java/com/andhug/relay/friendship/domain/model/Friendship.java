@@ -27,6 +27,17 @@ public class Friendship extends AggregateRoot {
 
   private Instant updatedAt;
 
+  public static Friendship create(ProfileId requesterId, ProfileId addresseeId) {
+    return Friendship.builder()
+        .id(FriendshipId.generate())
+        .requesterId(requesterId)
+        .addresseeId(addresseeId)
+        .status(FriendshipStatus.PENDING)
+        .createdAt(Instant.now())
+        .updatedAt(Instant.now())
+        .build();
+  }
+
   public void accept() {
     if (!this.isPending()) {
       throw new DomainException("Friendship not in PENDING status");

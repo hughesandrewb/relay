@@ -14,4 +14,8 @@ public record FriendshipId(UUID value) {
   public static FriendshipId of(UUID value) {
     return new FriendshipId(value);
   }
+
+  public static FriendshipId generate() {
+    return new FriendshipId(UUID.randomUUID());
+  }
 }

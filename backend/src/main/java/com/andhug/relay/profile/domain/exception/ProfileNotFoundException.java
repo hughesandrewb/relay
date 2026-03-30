@@ -1,10 +1,10 @@
 package com.andhug.relay.profile.domain.exception;
 
 import com.andhug.relay.shared.domain.exception.NotFoundException;
-import java.util.UUID;
+import com.andhug.relay.shared.domain.model.ProfileId;
 
 public class ProfileNotFoundException extends NotFoundException {
-  public ProfileNotFoundException(UUID profileId) {
-    super("Could not find profile with id: " + profileId);
+  public ProfileNotFoundException(ProfileId profileId) {
+    super("Could not find profile with id: " + profileId.toString());
   }
 }

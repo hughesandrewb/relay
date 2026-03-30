@@ -1,10 +1,22 @@
 package com.andhug.relay.realtime.domain.event;
 
+import com.andhug.relay.shared.domain.event.DomainEvent;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import java.time.Instant;
-import lombok.Builder;
-import org.jmolecules.event.annotation.DomainEvent;
 
-@DomainEvent
-@Builder
-public record RealtimeConnectionOpenedEvent(ProfileId profileId, Instant openedAt) {}
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@org.jmolecules.event.annotation.DomainEvent
+@AllArgsConstructor
+public class RealtimeConnectionOpenedEvent extends DomainEvent {
+
+  private final ProfileId profileId;
+
+  private final Instant openedAt;
+
+  public static RealtimeConnectionOpenedEvent of(ProfileId profileId) {
+    return new RealtimeConnectionOpenedEvent(profileId, Instant.now());
+  }
+}

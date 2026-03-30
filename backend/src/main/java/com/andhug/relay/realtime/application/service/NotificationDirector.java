@@ -1,10 +1,9 @@
 package com.andhug.relay.realtime.application.service;
 
+import com.andhug.relay.message.application.service.MessageQueryService;
 import com.andhug.relay.message.domain.events.MessageCreatedEvent;
 import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
-import com.andhug.relay.profile.application.mapper.ProfileMapper;
-import com.andhug.relay.profile.application.service.ProfileService;
-import com.andhug.relay.realtime.domain.ConnectionRegistry;
+import com.andhug.relay.realtime.domain.event.RealtimeConnectionOpenedEvent;
 import com.andhug.relay.realtime.domain.model.Connection;
 import com.andhug.relay.realtime.domain.model.GatewayEvent;
 import com.andhug.relay.realtime.domain.model.GatewayOpcode;
@@ -47,13 +46,11 @@ public class NotificationDirector {
 
   private final WorkspaceMemberQueryService workspaceMemberQueryService;
 
-  private final ProfileService profileService;
+  private final MessageQueryService messageQueryService;
 
   private final WorkspaceMapper workspaceMapper;
 
   private final RoomMapper roomMapper;
-
-  private final ProfileMapper profileMapper;
 
   private final ConnectionRegistry connectionRegistry;
 
@@ -67,13 +64,7 @@ public class NotificationDirector {
 
     Set<UUID> toNotify = roomToProfiles.get(event.getRoomId().value());
 
-    var data =
-        MessageDto.builder()
-            .id(event.getMessageId().value())
-            .author(profileMapper.toDto(profileService.getProfile(event.getAuthorId())))
-            .roomId(event.getRoomId().value())
-            .content(event.getContent())
-            .build();
+    MessageDto data = messageQueryService.getMessage(event.getMessageId());
 
     var message =
         RealtimeMessagePayload.builder()
@@ -124,6 +115,19 @@ public class NotificationDirector {
     broadcast(toNotify, message);
   }
 
+  public void dispatch(List<ProfileId> recipients, GatewayEvent event, Object data) {
+    var message =
+        RealtimeMessagePayload.builder()
+            .opcode(GatewayOpcode.DISPATCH)
+            .type(event)
+            .data(data)
+            .build();
+
+    Set<UUID> recipientIds = recipients.stream().map(ProfileId::value).collect(Collectors.toSet());
+
+    broadcast(recipientIds, message);
+  }
+
   private void broadcast(Set<UUID> recipients, RealtimeMessagePayload<Object> message) {
     for (UUID profileId : recipients) {
       Connection connection = connectionRegistry.getConnection(ProfileId.of(profileId));
@@ -140,6 +144,12 @@ public class NotificationDirector {
   @ApplicationModuleListener
   void onJoinedWorkspace(JoinedWorkspaceEvent event) {
     subscribeToRooms(event.profileId());
+  }
+
+  @ApplicationModuleListener
+  void onRealtimeConnectionOpened(RealtimeConnectionOpenedEvent event) {
+    log.info("Profile {} connected, subscribing to rooms", event.getProfileId());
+    this.subscribeToRooms(event.getProfileId().value());
   }
 
   public void subscribeToRooms(UUID profileId) {

@@ -1,7 +1,6 @@
 package com.andhug.relay.room.infrastructure.web;
 
 import com.andhug.relay.message.application.command.CreateMessageCommand;
-import com.andhug.relay.message.application.handler.CreateMessageHandler;
 import com.andhug.relay.message.application.query.GetMessagesQuery;
 import com.andhug.relay.message.application.service.MessageQueryService;
 import com.andhug.relay.message.domain.model.MessageId;
@@ -9,10 +8,10 @@ import com.andhug.relay.message.infrastructure.web.dto.CreateMessageHttpRequest;
 import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
 import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.room.application.command.UpdateRoomCommand;
-import com.andhug.relay.room.application.service.RoomCommandService;
 import com.andhug.relay.room.application.service.RoomQueryService;
 import com.andhug.relay.room.infrastructure.web.dto.RoomDto;
 import com.andhug.relay.room.infrastructure.web.dto.request.UpdateRoomRequest;
+import com.andhug.relay.shared.application.command.CommandBus;
 import com.andhug.relay.shared.domain.model.RoomId;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -45,11 +44,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Room Controller", description = "APIs for managing rooms")
 public class RoomController {
 
-  private final RoomCommandService roomCommandService;
+  private final CommandBus commandBus;
 
   private final RoomQueryService roomQueryService;
-
-  private final CreateMessageHandler createMessageHandler;
 
   private final MessageQueryService messageQueryService;
 
@@ -99,7 +96,7 @@ public class RoomController {
             .name(Optional.ofNullable(updateRequest.name()))
             .build();
 
-    RoomId updatedRoomId = roomCommandService.updateRoom(command);
+    RoomId updatedRoomId = commandBus.dispatch(command);
 
     RoomDto updatedRoom = roomQueryService.getRoom(updatedRoomId);
 
@@ -147,7 +144,7 @@ public class RoomController {
             .content(request.content())
             .build();
 
-    MessageId messageId = createMessageHandler.handle(createMessageCommand);
+    MessageId messageId = commandBus.dispatch(createMessageCommand);
 
     return ResponseEntity.ok(messageQueryService.getMessage(messageId));
   }

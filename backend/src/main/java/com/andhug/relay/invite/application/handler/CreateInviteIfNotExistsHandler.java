@@ -4,6 +4,7 @@ import com.andhug.relay.invite.application.command.CreateInviteIfNotExistsComman
 import com.andhug.relay.invite.domain.model.Invite;
 import com.andhug.relay.invite.domain.model.InviteId;
 import com.andhug.relay.invite.domain.repository.InviteRepository;
+import com.andhug.relay.shared.application.handler.SyncCommandHandler;
 import com.andhug.relay.shared.domain.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class CreateInviteIfNotExistsHandler {
+public class CreateInviteIfNotExistsHandler
+    implements SyncCommandHandler<CreateInviteIfNotExistsCommand, InviteId> {
 
   private final InviteRepository inviteRepository;
 

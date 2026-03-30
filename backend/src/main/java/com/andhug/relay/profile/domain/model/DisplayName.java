@@ -16,4 +16,9 @@ public record DisplayName(String value) {
   public static DisplayName of(String value) {
     return new DisplayName(value);
   }
+
+  @Override
+  public String toString() {
+    return value;
+  }
 }
