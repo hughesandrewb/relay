@@ -23,20 +23,15 @@ public class Profile extends AggregateRoot {
 
   private Color accentColor;
 
-  public static Profile create(
-      ProfileId id, String username, DisplayName displayName, Color accentColor) {
+  public static Profile create(ProfileId id, String username) {
     if (id == null) {
       throw new IllegalArgumentException("id cannot be null");
     }
     if (username == null || username.isBlank()) {
       throw new IllegalArgumentException("username cannot be null or blank");
     }
-    if (displayName == null) {
-      displayName = DisplayName.of(username);
-    }
-    if (accentColor == null) {
-      accentColor = Color.of(RandomUtils.generateRandomColor());
-    }
+    var displayName = DisplayName.of(username);
+    var accentColor = Color.of(RandomUtils.generateRandomColor());
 
     var profile = new Profile(id, username, displayName, accentColor);
     // TODO: register profile created event

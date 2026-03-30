@@ -1,11 +1,9 @@
 package com.andhug.relay.profile.application.handler;
 
 import com.andhug.relay.profile.application.command.CreateProfileCommand;
-import com.andhug.relay.profile.domain.model.DisplayName;
 import com.andhug.relay.profile.domain.model.Profile;
 import com.andhug.relay.profile.domain.repository.ProfileRepository;
 import com.andhug.relay.shared.application.handler.SyncCommandHandler;
-import com.andhug.relay.shared.domain.model.Color;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +22,7 @@ public class CreateProfileHandler implements SyncCommandHandler<CreateProfileCom
 
     log.info("Creating profile for user: {}", command.id());
 
-    var profile =
-        Profile.builder()
-            .id(command.id())
-            .username(command.username())
-            .displayName(command.displayName().orElse(DisplayName.of(command.username())))
-            .accentColor(command.accentColor().orElse(Color.of((String) null)))
-            .build();
+    var profile = Profile.create(command.id(), command.username());
 
     profileRepository.save(profile);
 

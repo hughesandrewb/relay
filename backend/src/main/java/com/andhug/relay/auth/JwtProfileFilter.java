@@ -11,7 +11,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,12 +61,7 @@ public class JwtProfileFilter extends OncePerRequestFilter {
       profile = profileRepository.findById(profileId);
     } catch (ProfileNotFoundException e) {
       var createProfileCommand =
-          CreateProfileCommand.builder()
-              .id(profileId)
-              .username(jwt.getClaim("preferred_username"))
-              .displayName(Optional.empty())
-              .accentColor(Optional.empty())
-              .build();
+          CreateProfileCommand.of(profileId, jwt.getClaimAsString("username"));
 
       profileId = commandBus.dispatch(createProfileCommand);
       profile = profileRepository.findById(profileId);
