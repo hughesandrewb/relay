@@ -3,7 +3,6 @@ package com.andhug.relay.realtime.domain.event;
 import com.andhug.relay.shared.domain.event.DomainEvent;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import java.time.Instant;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

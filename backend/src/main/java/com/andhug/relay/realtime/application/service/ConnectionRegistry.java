@@ -27,8 +27,7 @@ public class ConnectionRegistry {
 
     this.registry.put(profileId.value(), connection);
 
-    eventPublisher.publishEvent(
-        RealtimeConnectionOpenedEvent.of(profileId));
+    eventPublisher.publishEvent(RealtimeConnectionOpenedEvent.of(profileId));
 
     log.info("Registered connection for {}", profileId);
   }
@@ -37,9 +36,7 @@ public class ConnectionRegistry {
 
     this.registry.remove(profileId.value());
 
-    eventPublisher.publishEvent(
-        RealtimeConnectionClosedEvent.of(profileId));
-
+    eventPublisher.publishEvent(RealtimeConnectionClosedEvent.of(profileId));
 
     log.info("Unregistered connection for {}", profileId);
   }
