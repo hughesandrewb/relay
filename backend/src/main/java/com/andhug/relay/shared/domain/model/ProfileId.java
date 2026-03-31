@@ -28,10 +28,6 @@ public record ProfileId(UUID value) {
     return new ProfileId(IdValidator.validate(value, ProfileId.class.getName()));
   }
 
-  public String getCacheKey() {
-    return "profile:" + value.toString();
-  }
-
   @Override
   public String toString() {
     return value.toString();

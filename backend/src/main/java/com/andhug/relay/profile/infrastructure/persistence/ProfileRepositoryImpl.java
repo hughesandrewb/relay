@@ -32,7 +32,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
   @Override
   public Profile findById(ProfileId profileId) {
 
-    Profile cachedProfile = profileRedisTemplate.opsForValue().get(profileId.getCacheKey());
+    Profile cachedProfile = profileRedisTemplate.opsForValue().get(getCacheKey(profileId));
 
     if (cachedProfile != null) {
       log.info("Cache hit for profile {}", profileId);
@@ -49,7 +49,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
                     new NotFoundException(
                         String.format("Profile could not be found, id: %s", profileId.toString())));
 
-    profileRedisTemplate.opsForValue().set(profileId.getCacheKey(), profile);
+    profileRedisTemplate.opsForValue().set(getCacheKey(profileId), profile);
 
     return profile;
   }
@@ -58,7 +58,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
   public List<Profile> findAllById(List<ProfileId> profileIds) {
 
     List<String> cacheKeys =
-        profileIds.stream().map(ProfileId::getCacheKey).collect(Collectors.toList());
+        profileIds.stream().map(this::getCacheKey).collect(Collectors.toList());
 
     List<Profile> cacheResults = profileRedisTemplate.opsForValue().multiGet(cacheKeys);
 
@@ -87,7 +87,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     Map<String, Profile> cacheMap =
         dbProfiles.stream()
             .collect(
-                Collectors.toMap(profile -> profile.getId().getCacheKey(), profile -> profile));
+                Collectors.toMap(profile -> getCacheKey(profile.getId()), profile -> profile));
     profileRedisTemplate.opsForValue().multiSet(cacheMap);
 
     Map<ProfileId, Profile> profileMap = new HashMap<>();
@@ -112,5 +112,9 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     profileJpaRepository.save(profileEntity);
 
     return profileMapper.toDomain(profileEntity);
+  }
+
+  private String getCacheKey(ProfileId profileId) {
+    return "profile:" + profileId.toString();
   }
 }
