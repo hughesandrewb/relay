@@ -125,6 +125,115 @@ sequenceDiagram
     Server->>Client: READY
 ```
 
-### Presence & Fanout
+#### Presence & Fanout
 
 Presence and fanout are important aspects of any real-time platform, thus they are defined in their own documents to prevent too much domain knowledge from leaking into the gateway. The gateway should be dumb and purely infrastructure with no knowledge of what the application itself is doing.
+
+## Implementation
+
+### Profile Presence
+
+A user can have a single profile presence record that contains their global status, as opposed to a per client status, their custom status to display to other users, and thier client flags, a bitmap indicating which clients are actively being used (i.e. browser, mobile, desktop).
+
+#### Statuses
+
+If two clients have different statuses, the lowest value will win. For example, if browser is Online (`1`) and mobile is Do not disturb (`0`), other users will see you as Do not disturb (`0`).
+
+`0`: Do not disturb
+`1`: Online
+`2`: Away
+`3`: Offline
+
+#### Custom Status
+
+Users can choose to insert their own custom status. A custom status should not exceed 140 characters.
+
+#### Client Flags
+
+Each device is represented in a small bitmap with the following positions.
+
+Browser: `1 << 0 = 0b0001`
+Desktop: `1 << 1 = 0b0010`
+Mobile: `1 << 2 = 0b0100`
+
+As a concrete example, if a user has both a browser and mobile session active, the clientFlags field would be as follows:
+
+```
+(1 << 0) & (1 << 2) = 0b0101
+```
+
+#### Example Profile Presence Record
+
+```json
+presence:profile:{profileId} -> {
+    status: 0,
+    customStatus: 'Relaying...',
+    clientFlags: 0b000
+}
+```
+
+### Session Presence
+
+A user can have multiple session presence records, one per active client. If a user is connected with their browser and mobile, they would have a single profile presence record but two session presence records. Session presence records contain information about each WebSocket connection, the gateway identifier, per session status, connection time, last heartbeat, device type. When a message needs to be sent to a user, the presence service can search for all the sessions presence services using the user's profileId, then publish the message to each gatewayId in the session presence record.
+
+#### Example Session Presence Record
+
+```json
+presence:session:{sessionId} -> {
+    profileId: 'e6d30c1e-b6df-49e1-a2dd-32208051ed3f',
+    gatewayId: 'ab4ad9c1-b044-4c68-af3c-acc028d2a325',
+    status: 1,
+    deviceType: 0,
+    lastHeartbeat: 1775099183,
+    connectedAt: 1775099067
+}
+```
+
+#### Example Session Presence Set
+
+```json
+presence:profile:{profileId}:sessions -> [
+    '0f0c6e65-7801-4e06-8744-15e2bac79eff',
+    'c7477b45-943f-49cc-b26b-5ae11b026137'
+]
+```
+
+### Heartbeat & Session Expiry
+
+Keeping track of active sessions at scale is rather difficult, there is no easy to accurately and efficiently clean up sessions that missed their heartbeat window. The intuitive approach is to use the Redis time-to-live mechanism and reset the ttl for the session when it sends a heartbeat, but this does not allow the server to perform the rest of the clean up. We still need to at least remove the session id from the profiles session presence set.
+
+The next step is to build a cleanup job that can run in the background and actively check sessions and clean them up after they have missed their heartbeat window. The difficulty here is efficiency, we can't simple maintain a list of sessions to loop through to find expired sessions. This is `O(N)` and will not hold up at massive scale, but realistically would hold up for a long time. What we can instead do is use a sorted set in Redis to keep a list of every session along with their heartbeat expiry time as a unix epoch, then every few seconds we can get all the expired sessions by sorting the set and retrieving the range from `0` to `currentUnixTimestamp`.
+
+#### Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant Presence
+    participant Redis
+    loop
+        Presence->>Redis: ZRANGE presence:heartbeat 0 {currentUnixTimestamp} BYSCORE
+        Redis->>Presence: [list of expired sessions]
+        loop for each expired session
+            Presence->>Redis: DEL presence:session:{sessionId}
+            Presence->>Redis: ZREM presence:heartbeats {sessionId}
+        end
+    end
+    Client<<->>Gateway: Authenticated WebSocket connection
+    Gateway->>Presence: trackSession(profileId, gatewayId)
+    Presence->>Presence: Generate sessionId
+    Presence->>Redis: SET presence:profile:{profileId} {status, customStatus, clientFlags}
+    Presence->>Redis: SET presence:session:{sessionId} {profileId, gatewayId, status, deviceType, lastHeartbeat, connectedAt}
+    Presence->>Redis: SADD presence:profile:{profileId}:sessions sessionId
+    Presence->>Redis: ZADD presence:heartbeat {currentUnixTimestamp + 90s} '{sessionId}'
+
+    Client->>Gateway: Clean disconnect
+    Gateway->>Presence: cleanSession(sessionId)
+    Presence->>Redis: DEL presence:session:{sessionId}
+    Presence->>Redis: SREM presence:profile:{profileId}:sessions {sessionId}
+    Presence->>Redis: ZREM presence:heartbeats {sessionId}
+    opt if this is the last session the user has
+        Presence->>Redis: DEL presence:profile:{profileId}
+    end
+```
