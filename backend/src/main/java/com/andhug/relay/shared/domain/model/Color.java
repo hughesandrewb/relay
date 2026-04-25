@@ -1,6 +1,6 @@
 package com.andhug.relay.shared.domain.model;
 
-import com.andhug.relay.utils.RandomUtils;
+import com.andhug.relay.shared.application.utils.RandomUtils;
 
 public record Color(String value) {
   public Color {

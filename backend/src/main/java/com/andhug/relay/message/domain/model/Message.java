@@ -2,6 +2,7 @@ package com.andhug.relay.message.domain.model;
 
 import com.andhug.relay.message.domain.events.MessageCreatedEvent;
 import com.andhug.relay.shared.domain.model.AggregateRoot;
+import com.andhug.relay.shared.domain.model.MessageId;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import com.andhug.relay.shared.domain.model.RoomId;
 import lombok.AllArgsConstructor;

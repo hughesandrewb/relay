@@ -1,8 +1,8 @@
 package com.andhug.relay.realtime.application.service;
 
-import com.andhug.relay.realtime.domain.event.RealtimeConnectionClosedEvent;
-import com.andhug.relay.realtime.domain.event.RealtimeConnectionOpenedEvent;
-import com.andhug.relay.realtime.domain.model.Connection;
+import com.andhug.relay.realtime.application.domain.event.RealtimeConnectionClosedEvent;
+import com.andhug.relay.realtime.application.domain.event.RealtimeConnectionOpenedEvent;
+import com.andhug.relay.realtime.application.domain.model.Connection;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import java.util.Map;
 import java.util.UUID;

@@ -1,7 +1,7 @@
 package com.andhug.relay.realtime.infrastructure.web.dto;
 
-import com.andhug.relay.realtime.domain.model.GatewayEvent;
-import com.andhug.relay.realtime.domain.model.GatewayOpcode;
+import com.andhug.relay.realtime.application.domain.model.GatewayEvent;
+import com.andhug.relay.realtime.application.domain.model.GatewayOpcode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 

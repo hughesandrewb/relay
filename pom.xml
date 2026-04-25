@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.0.2</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+
+  <groupId>com.andhug</groupId>
+  <artifactId>relay</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>shared-lib</module>
+    <module>backend</module>
+    <module>gateway</module>
+  </modules>
+  <properties>
+    <java.version>25</java.version>
+  </properties>
+
+  <!-- Centralize dependency versions here -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.andhug</groupId>
+        <artifactId>shared-lib</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- Centralize plugin versions here -->
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.12.1</version>
+          <configuration>
+            <release>25</release>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

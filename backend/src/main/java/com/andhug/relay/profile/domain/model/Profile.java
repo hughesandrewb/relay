@@ -1,9 +1,10 @@
 package com.andhug.relay.profile.domain.model;
 
+import com.andhug.relay.shared.application.utils.RandomUtils;
 import com.andhug.relay.shared.domain.model.AggregateRoot;
 import com.andhug.relay.shared.domain.model.Color;
+import com.andhug.relay.shared.domain.model.DisplayName;
 import com.andhug.relay.shared.domain.model.ProfileId;
-import com.andhug.relay.utils.RandomUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

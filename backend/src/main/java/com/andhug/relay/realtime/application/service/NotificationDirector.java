@@ -2,11 +2,10 @@ package com.andhug.relay.realtime.application.service;
 
 import com.andhug.relay.message.application.service.MessageQueryService;
 import com.andhug.relay.message.domain.events.MessageCreatedEvent;
-import com.andhug.relay.message.infrastructure.web.dto.MessageDto;
-import com.andhug.relay.realtime.domain.event.RealtimeConnectionOpenedEvent;
-import com.andhug.relay.realtime.domain.model.Connection;
-import com.andhug.relay.realtime.domain.model.GatewayEvent;
-import com.andhug.relay.realtime.domain.model.GatewayOpcode;
+import com.andhug.relay.realtime.application.domain.event.RealtimeConnectionOpenedEvent;
+import com.andhug.relay.realtime.application.domain.model.Connection;
+import com.andhug.relay.realtime.application.domain.model.GatewayEvent;
+import com.andhug.relay.realtime.application.domain.model.GatewayOpcode;
 import com.andhug.relay.realtime.infrastructure.web.dto.RealtimeMessagePayload;
 import com.andhug.relay.room.application.mapper.RoomMapper;
 import com.andhug.relay.room.domain.event.RoomUpdatedEvent;
@@ -57,23 +56,22 @@ public class NotificationDirector {
   private final Map<UUID, Set<UUID>> roomToProfiles =
       new ConcurrentHashMap<>(); // roomId -> profileId[]
 
-  @ApplicationModuleListener
   void onMessageCreated(MessageCreatedEvent event) {
 
     log.info("Message created event received for message {}", event.getMessageId());
 
-    Set<UUID> toNotify = roomToProfiles.get(event.getRoomId().value());
+    // Set<UUID> toNotify = roomToProfiles.get(event.getRoomId().value());
 
-    MessageDto data = messageQueryService.getMessage(event.getMessageId());
+    // MessageDto data = messageQueryService.getMessage(event.getMessageId());
 
-    var message =
-        RealtimeMessagePayload.builder()
-            .opcode(GatewayOpcode.DISPATCH)
-            .type(GatewayEvent.MESSAGE_CREATE)
-            .data(data)
-            .build();
+    // var message =
+    //     RealtimeMessagePayload.builder()
+    //         .opcode(GatewayOpcode.DISPATCH)
+    //         .type(GatewayEvent.MESSAGE_CREATE)
+    //         .data(data)
+    //         .build();
 
-    broadcast(toNotify, message);
+    // broadcast(toNotify, message);
   }
 
   @ApplicationModuleListener

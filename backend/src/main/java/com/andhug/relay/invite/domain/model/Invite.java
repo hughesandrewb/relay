@@ -1,6 +1,7 @@
 package com.andhug.relay.invite.domain.model;
 
 import com.andhug.relay.invite.domain.exception.InviteExpiredException;
+import com.andhug.relay.shared.domain.model.InviteId;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import com.andhug.relay.shared.domain.model.WorkspaceId;
 import java.time.LocalDateTime;

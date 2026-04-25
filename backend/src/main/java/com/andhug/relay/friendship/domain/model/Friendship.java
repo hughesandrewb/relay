@@ -2,6 +2,7 @@ package com.andhug.relay.friendship.domain.model;
 
 import com.andhug.relay.shared.domain.exception.DomainException;
 import com.andhug.relay.shared.domain.model.AggregateRoot;
+import com.andhug.relay.shared.domain.model.FriendshipId;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import java.time.Instant;
 import lombok.AllArgsConstructor;

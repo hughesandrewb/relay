@@ -1,7 +1,7 @@
 package com.andhug.relay.shared.domain.model;
 
+import com.andhug.relay.shared.application.utils.IdValidator;
 import com.andhug.relay.shared.domain.exception.InvalidArgumentException;
-import com.andhug.relay.utils.IdValidator;
 import java.util.UUID;
 
 public record RoomId(UUID value) {

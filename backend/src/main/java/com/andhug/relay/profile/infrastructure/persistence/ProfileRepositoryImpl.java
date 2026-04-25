@@ -86,8 +86,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
 
     Map<String, Profile> cacheMap =
         dbProfiles.stream()
-            .collect(
-                Collectors.toMap(profile -> getCacheKey(profile.getId()), profile -> profile));
+            .collect(Collectors.toMap(profile -> getCacheKey(profile.getId()), profile -> profile));
     profileRedisTemplate.opsForValue().multiSet(cacheMap);
 
     Map<ProfileId, Profile> profileMap = new HashMap<>();

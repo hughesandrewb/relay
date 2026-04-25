@@ -1,11 +1,10 @@
 package com.andhug.relay.shared.application.mapper;
 
-import com.andhug.relay.friendship.domain.model.FriendshipId;
-import com.andhug.relay.invite.domain.model.InviteCode;
-import com.andhug.relay.invite.domain.model.InviteId;
-import com.andhug.relay.message.domain.model.MessageId;
-import com.andhug.relay.profile.domain.model.DisplayName;
 import com.andhug.relay.shared.domain.model.Color;
+import com.andhug.relay.shared.domain.model.DisplayName;
+import com.andhug.relay.shared.domain.model.FriendshipId;
+import com.andhug.relay.shared.domain.model.InviteId;
+import com.andhug.relay.shared.domain.model.MessageId;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import com.andhug.relay.shared.domain.model.RoomId;
 import com.andhug.relay.shared.domain.model.WorkspaceId;
@@ -106,13 +105,5 @@ public interface ValueObjectMapper {
 
   default String fromNickname(Nickname nickname) {
     return nickname.value();
-  }
-
-  default InviteCode toInviteCode(String inviteCode) {
-    return InviteCode.of(inviteCode);
-  }
-
-  default String fromInviteCode(InviteCode inviteCode) {
-    return inviteCode.toString();
   }
 }

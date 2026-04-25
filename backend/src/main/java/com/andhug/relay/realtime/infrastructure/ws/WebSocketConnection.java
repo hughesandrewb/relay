@@ -1,7 +1,7 @@
 package com.andhug.relay.realtime.infrastructure.ws;
 
-import com.andhug.relay.realtime.domain.model.Connection;
-import com.andhug.relay.utils.JsonUtils;
+import com.andhug.relay.realtime.application.domain.model.Connection;
+import com.andhug.relay.shared.application.utils.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;

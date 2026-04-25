@@ -1,7 +1,7 @@
 package com.andhug.relay.message.application.query;
 
-import com.andhug.relay.message.domain.model.MessageId;
 import com.andhug.relay.shared.domain.exception.InvalidArgumentException;
+import com.andhug.relay.shared.domain.model.MessageId;
 import java.util.Objects;
 import java.util.UUID;
 

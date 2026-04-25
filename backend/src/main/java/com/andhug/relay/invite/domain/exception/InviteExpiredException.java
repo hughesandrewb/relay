@@ -1,7 +1,7 @@
 package com.andhug.relay.invite.domain.exception;
 
-import com.andhug.relay.invite.domain.model.InviteId;
 import com.andhug.relay.shared.domain.exception.DomainException;
+import com.andhug.relay.shared.domain.model.InviteId;
 
 public class InviteExpiredException extends DomainException {
 

@@ -1,6 +1,7 @@
 package com.andhug.relay.invite.application.mapper;
 
 import com.andhug.relay.invite.domain.model.Invite;
+import com.andhug.relay.invite.domain.model.InviteCode;
 import com.andhug.relay.invite.infrastructure.persistence.InviteEntity;
 import com.andhug.relay.invite.infrastructure.web.dto.InviteDto;
 import com.andhug.relay.profile.domain.model.Profile;
@@ -19,4 +20,12 @@ public interface InviteMapper {
 
   @Mapping(target = "createdAt", source = "invite.createdAt")
   InviteDto toDto(Invite invite, Workspace workspace, Profile sender);
+
+  default InviteCode toInviteCode(String inviteCode) {
+    return InviteCode.of(inviteCode);
+  }
+
+  default String fromInviteCode(InviteCode inviteCode) {
+    return inviteCode.toString();
+  }
 }

@@ -1,8 +1,8 @@
 package com.andhug.relay.message.domain.events;
 
 import com.andhug.relay.message.domain.model.Message;
-import com.andhug.relay.message.domain.model.MessageId;
 import com.andhug.relay.shared.domain.event.DomainEvent;
+import com.andhug.relay.shared.domain.model.MessageId;
 import com.andhug.relay.shared.domain.model.RoomId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

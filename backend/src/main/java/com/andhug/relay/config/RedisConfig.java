@@ -1,6 +1,7 @@
 package com.andhug.relay.config;
 
 import com.andhug.relay.profile.domain.model.Profile;
+import com.andhug.relay.shared.domain.model.ProfilePresence;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -27,6 +28,21 @@ public class RedisConfig {
 
     JacksonJsonRedisSerializer<Profile> jacksonJsonRedisSerializer =
         new JacksonJsonRedisSerializer<>(Profile.class);
+    template.setValueSerializer(jacksonJsonRedisSerializer);
+
+    return template;
+  }
+
+  @Bean
+  RedisTemplate<String, ProfilePresence> profilePresenceRedisTemplate(
+      RedisConnectionFactory redisConnectionFactory) {
+    RedisTemplate<String, ProfilePresence> template = new RedisTemplate<>();
+    template.setConnectionFactory(redisConnectionFactory);
+
+    template.setKeySerializer(new StringRedisSerializer());
+
+    JacksonJsonRedisSerializer<ProfilePresence> jacksonJsonRedisSerializer =
+        new JacksonJsonRedisSerializer<>(ProfilePresence.class);
     template.setValueSerializer(jacksonJsonRedisSerializer);
 
     return template;

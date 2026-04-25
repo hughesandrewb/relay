@@ -1,7 +1,7 @@
 package com.andhug.relay.invite.domain.model;
 
+import com.andhug.relay.shared.application.utils.RandomUtils;
 import com.andhug.relay.shared.domain.exception.InvalidArgumentException;
-import com.andhug.relay.utils.RandomUtils;
 
 public record InviteCode(String value) {
 

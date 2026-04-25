@@ -2,7 +2,7 @@ package com.andhug.relay.invite.domain.repository;
 
 import com.andhug.relay.invite.domain.model.Invite;
 import com.andhug.relay.invite.domain.model.InviteCode;
-import com.andhug.relay.invite.domain.model.InviteId;
+import com.andhug.relay.shared.domain.model.InviteId;
 import com.andhug.relay.shared.domain.model.ProfileId;
 import com.andhug.relay.shared.domain.model.WorkspaceId;
 

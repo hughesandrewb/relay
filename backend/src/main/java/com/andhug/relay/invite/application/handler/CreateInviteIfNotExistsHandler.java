@@ -2,10 +2,10 @@ package com.andhug.relay.invite.application.handler;
 
 import com.andhug.relay.invite.application.command.CreateInviteIfNotExistsCommand;
 import com.andhug.relay.invite.domain.model.Invite;
-import com.andhug.relay.invite.domain.model.InviteId;
 import com.andhug.relay.invite.domain.repository.InviteRepository;
 import com.andhug.relay.shared.application.handler.SyncCommandHandler;
 import com.andhug.relay.shared.domain.exception.NotFoundException;
+import com.andhug.relay.shared.domain.model.InviteId;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
